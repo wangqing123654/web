@@ -10,7 +10,7 @@
 			</classpath>
 		</taskdef>
 		<excel excelFilePath="${excelFilePath}"  copyType=".class" versionNumber="120000" classPrefixPath="" expandedName=".class" initRowNum="3" basedir="${projectClasses}" todir="${tomcatWebinfo}"/>
-		<excel excelFilePath="${excelFilePath}"  copyType=".x"   initRowNum="3" basedir="${javahis.home}" todir="${tomcatXconifg}"/>
-		<excel excelFilePath="${excelFilePath}"  copyType=".jhw"   initRowNum="3" basedir="${javahis.home}" todir="${tomcatXconifg}"/>
+		<excel excelFilePath="${excelFilePath}"  copyType=".x" initRowNum="3" basedir="${javahis.home}" todir="${tomcatXconifg}"/>
+		<excel excelFilePath="${excelFilePath}"  copyType=".jhw" initRowNum="3" basedir="${javahis.home}" todir="${tomcatXconifg}"/>
 	</target>
 </project>
