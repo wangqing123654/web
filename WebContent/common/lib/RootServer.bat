@@ -1,0 +1,1 @@
+java -classpath ".;T40-api.jar;classes12.jar;servlet-api.jar" com.dongyang.server.RootServer

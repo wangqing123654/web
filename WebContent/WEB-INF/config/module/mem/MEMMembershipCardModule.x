@@ -1,0 +1,47 @@
+Module.item=isChild;insertCard;updatedata;deletedata;selectMemCard
+
+// 查询全字段
+isChild.Type=TSQL
+isChild.SQL=SELECT ROWNUM AS ID,MEM_CODE,MEM_DESC,MEM_ENG_DESC,PY1,PY2,SEQ,MEM_FEE, &
+             VALID_DAYS,DESCRIPTION,OVERDRAFT, &
+	    OPT_DATE,OPT_USER,OPT_TERM,MEM_IN_REASON,MEM_CARD FROM MEM_MEMBERSHIP_INFO  ORDER BY SEQ
+isChild.Debug=N
+
+
+
+
+// 修改全字段
+ 
+updatedata.Type=TSQL
+updatedata.SQL=UPDATE MEM_MEMBERSHIP_INFO SET MEM_DESC=<MEM_DESC>,MEM_ENG_DESC=<MEM_ENG_DESC>, &
+                      PY1=<PY1>,MEM_FEE=<MEM_FEE>,VALID_DAYS=<VALID_DAYS>, &
+                      DESCRIPTION=<DESCRIPTION>,OVERDRAFT=<OVERDRAFT>, &
+		      OPT_USER=<OPT_USER>,OPT_DATE=<OPT_DATE>,OPT_TERM=<OPT_TERM>,MEM_IN_REASON=<MEM_IN_REASON>,MEM_CARD=<MEM_CARD> &
+		      WHERE  MEM_CODE=<MEM_CODE>         
+updatedata.Debug=N
+
+//添加
+insertCard.Type=TSQL
+insertCard.SQL=INSERT INTO MEM_MEMBERSHIP_INFO &  
+               ( MEM_CODE,MEM_DESC,MEM_ENG_DESC,PY1, &
+               SEQ,MEM_FEE,VALID_DAYS, &
+	      DESCRIPTION,OVERDRAFT,OPT_DATE,OPT_USER,OPT_TERM,MEM_IN_REASON,MEM_CARD ) &
+	       VALUES &
+              ( <MEM_CODE>,<MEM_DESC>,<MEM_ENG_DESC>,<PY1>, &
+	       <SEQ>,<MEM_FEE>,<VALID_DAYS>, &
+	       <DESCRIPTION>,<OVERDRAFT>,<OPT_DATE>,<OPT_USER>,<OPT_TERM>,<MEM_IN_REASON>,<MEM_CARD> )
+               
+insertCard.Debug=N
+
+//删除
+
+deletedata.Type=TSQL
+deletedata.SQL=DELETE FROM MEM_MEMBERSHIP_INFO WHERE MEM_CODE=<MEM_CODE>
+               
+deletedata.Debug=N
+
+//查询该类型
+selectMemCard.Type=TSQL
+selectMemCard.SQL=SELECT MEM_CODE,VALID_DAYS,MEM_IN_REASON FROM MEM_MEMBERSHIP_INFO &
+			WHERE MEM_CARD=<MEM_CARD> AND VALID_DAYS=<VALID_DAYS> AND MEM_IN_REASON=<MEM_IN_REASON>
+selectMemCard.Debug=N

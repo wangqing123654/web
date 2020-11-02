@@ -1,0 +1,1 @@
+java -classpath ".;T40-api.jar;" com.dongyang.server.FileServer

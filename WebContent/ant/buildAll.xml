@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="JavaHis" default="javahis">
+	<property file="build.properties" />
+	<property name="Name" value="JavaHis" />
+	<property name="version" value="2.0" />
+	<property name="year" value="2011" />
+	<property name="lib.classpath" value="${SVN_ROOT}/JavaHIS/lib" />
+	<!--<property name="javahis.home" value="${SVN_ROOT}/JavaHIS" />-->
+	<property name="javahis.src" value="${javahis.home}/src" />
+	<property name="build.library.dest" value="${build.library}" />
+	<property name="build.dest" value="${javahis.home}/build/dest" />
+	<property name="javahisclasses.dir" value="${javahis.home}/build/classes" />
+
+
+	<!-- 定义各模块使用的classpath -->
+
+	<path id="test.classpath">
+
+		<fileset dir="${build.library.dest}">
+
+			<include name="*.jar" />
+
+		</fileset>
+	</path>
+
+	<target name="javahis" depends="usge,init,archive,War" />
+
+
+	<target name="usge">
+		<echo message="++++++++++++${JAVA_HOME}++++++++++++" />
+		<echo message="${Name} Build file" />
+		<echo message="----------- ${Name} ${version} [${year}] ------------" />
+		<echo message="" />
+
+		<echo message=" available targets are:" />
+
+		<echo message="" />
+
+		<echo message="   clean    --> cleans up the directory" />
+
+		<echo message="   build    --> compiles the source code" />
+		<echo message="    war     --> generates the war " />
+
+		<echo message="" />
+
+
+	</target>
+
+	<!--清除所有输出目录-->
+	<target name="init" description="clan">
+		<echo>正在删除编译程序目录...</echo>
+		<delete dir="${javahisclasses.dir}" />
+
+		<echo>正在创建编译程序目录...</echo>
+
+		<mkdir dir="${javahisclasses.dir}" />
+
+		<echo>正在删除dest目录...</echo>
+
+		<delete dir="${build.dest}" />
+
+		<echo>正在创建dest目录...</echo>
+
+		<mkdir dir="${build.dest}" />
+
+		<echo>正在删除dest目录下的lib...</echo>
+
+		<!--<delete dir="${WebShop.library.dest}" />
+
+		<echo>正在创建dest目录下的lib...</echo>
+
+		<mkdir dir="${WebShop.library.dest}" />-->
+
+	</target>
+
+
+	<target name="archive">
+		<echo>拷贝jar包到dest下的lib包...</echo>
+		<copy todir="${build.library.dest}" overwrite="yes">
+
+			<fileset dir="${PUBLIC_LIB}" includes="*.jar" />
+
+		</copy>
+
+		<echo>编译javahis的java类...</echo>
+		<!--mkdir dir="${javahis.home}/classes" /-->
+		<javac classpathref="test.classpath" fork="true" memorymaximumsize="512m" destdir="${javahisclasses.dir}" debug="true" deprecation="false" failonerror="true" verbose="false">
+			<src path="${javahis.src}" />
+			<include name="**/*.java" />
+		</javac>
+
+	</target>
+
+	<!-- depends="archive"-->
+	<target name="War" depends="archive">
+
+		<echo>打包成javahis项目文件...</echo>
+		<echo>创建javahis项目目录web...</echo>
+		<mkdir dir="${build.dest}/web" />
+		<!--COPY文件common-->
+		<copy todir="${build.dest}/web/common/classes/" overwrite="yes">
+			<fileset dir="${javahisclasses.dir}" includes="com/**" />
+			<fileset dir="${javahisclasses.dir}" includes="jdo/**" />
+		</copy>
+		<copy todir="${build.dest}/web/common/lib/" overwrite="yes">
+			<fileset dir="${build.library.dest}" includes="*.jar" />
+		</copy>
+
+		<!--COPY文件config 客户端.x文件-->
+		<copy todir="${build.dest}/web/config/" overwrite="yes">
+			<fileset dir="${javahis.home}/config-Client" includes="**" />
+		</copy>
+
+		<!--COPY文件css-->
+		<copy todir="${build.dest}/web/css/" overwrite="yes">
+			<fileset dir="${javahis.home}/WebRoot/css" includes="**" />
+		</copy>
+
+		<!--COPY文件image-->
+		<copy todir="${build.dest}/web/image/" overwrite="yes">
+			<fileset dir="${javahis.home}/WebRoot/image" includes="**" />
+		</copy>
+		<!--COPY文件js-->
+		<copy todir="${build.dest}/web/js/" overwrite="yes">
+			<fileset dir="${javahis.home}/WebRoot/js" includes="**" />
+		</copy>
+
+		<!--COPY文件jsp-->
+		<copy todir="${build.dest}/web/jsp/" overwrite="yes">
+			<fileset dir="${javahis.home}/WebRoot/jsp" includes="**" />
+		</copy>
+
+		<!--COPY文件share-->
+		<copy todir="${build.dest}/web/share/" overwrite="yes">
+			<fileset dir="${javahis.home}/share" includes="**" />
+		</copy>
+		<!--COPY文件tbuilder-->
+
+		<!--COPY文件wav-->
+
+		<!--COPY文件WEB-INF-->
+
+		<!--actionClass-->
+		<copy todir="${build.dest}/web/WEB-INF/actionClass" overwrite="yes">
+			<fileset dir="${javahisclasses.dir}" includes="action/**" />
+		</copy>
+		<!--classes-->
+		<copy todir="${build.dest}/web/WEB-INF/classes" overwrite="yes">
+			<fileset dir="${javahisclasses.dir}" includes="**" />
+		</copy>
+		<!--服务端的配置config-->
+		<copy todir="${build.dest}/web/WEB-INF/config" overwrite="yes">
+			<fileset dir="${javahis.home}/config-Server" includes="**" />
+		</copy>
+		<!--jdoClass-->
+		<copy todir="${build.dest}/web/WEB-INF/jdoClass" overwrite="yes">
+			<fileset dir="${javahisclasses.dir}" includes="jdo/**" />
+		</copy>
+		<!--lib-->
+		<copy todir="${build.dest}/web/WEB-INF/lib" overwrite="yes">
+			<fileset dir="${build.library.dest}" includes="*.jar" />
+		</copy>
+		<!--web.xml-->
+		<copy todir="${build.dest}/web/WEB-INF" overwrite="yes">
+			<fileset dir="${javahis.home}/WebRoot/WEB-INF" includes="web.xml" />
+		</copy>
+		<!--COPY文件WEB/index.html,TBuilder.html-->
+		<copy todir="${build.dest}/web" overwrite="yes">
+			<fileset dir="${javahis.home}/WebRoot/" includes="index.html" />
+		</copy>
+		<copy todir="${build.dest}/web" overwrite="yes">
+			<fileset dir="${javahis.home}/WebRoot/" includes="TBuilder.html" />
+		</copy>
+		<!-- COPY META-INF  -->
+	</target>
+
+
+</project>

@@ -1,0 +1,69 @@
+Module.item=updatename;insertdata;updatedata;selectCheckResult;onUpdateStat;selectResultLIS;selectResultRIS;
+
+//根据 IP 更新name
+updatename.Type=TSQL
+updatename.SQL=UPDATE MED_NODIFY_CONFIG SET SKT_USER =<SKT_USER> WHERE OPT_TERM = <OPT_TERM>
+updatename.Debug=N
+
+// 更新全字段
+updatedata.Type=TSQL
+updatedata.SQL=UPDATE MED_NODIFY_CONFIG SET &
+		 	REGION_CODE=<REGION_CODE>,&
+		 	OPEN_FLG=<OPEN_FLG>,&
+		 	SKT_USER=<SKT_USER>,&
+		 	ADM_TYPE=<ADM_TYPE>,&
+		 	STATION_CODE=<STATION_CODE>,&
+		 	SKT_TYPE=<SKT_TYPE> &
+		 	WHERE REGION_CODE=<REGION_CODE>  &
+		 	AND   OPT_TERM=<OPT_TERM>
+updatedata.Debug=N
+
+//插入全字段
+insertdata.Type=TSQL
+insertdata.SQL=INSERT INTO MED_NODIFY_CONFIG &
+		      (REGION_CODE,OPEN_FLG,OPT_TERM,ADM_TYPE,SKT_TYPE,SKT_USER,STATION_CODE ) &
+		VALUES(<REGION_CODE>,<OPEN_FLG>,<OPT_TERM>,<ADM_TYPE>,<SKT_TYPE>,<SKT_USER>,<STATION_CODE>)
+insertdata.Debug=N
+
+//双击图标显示检验、检查结果
+selectCheckResult.Type=TSQL
+selectCheckResult.SQL=SELECT CASE WHEN A.SEND_STAT='1' THEN 'N' ELSE 'Y'  END AS  FLG, A.* ,B.ORDER_DESC FROM MED_NODIFY A  ,SYS_FEE B &
+                      WHERE A.ORDER_CODE=B.ORDER_CODE AND B.ACTIVE_FLG='Y' AND A.SEND_DATE  &
+                      BETWEEN TO_DATE(<START_DATE>,'YYYYMMDDHH24MISS')          &
+                      AND     TO_DATE(<END_DATE>,'YYYYMMDDHH24MISS')
+selectCheckResult.item=CAT1_TYPE;SEND_STAT;BILLING_DOCTORS;STATION_CODE;CLINICAREA_CODE
+selectCheckResult.SEND_STAT=A.SEND_STAT=<SEND_STAT>
+selectCheckResult.CAT1_TYPE=A.CAT1_TYPE=<CAT1_TYPE>
+selectCheckResult.BILLING_DOCTORS=A.BILLING_DOCTORS=<BILLING_DOCTORS>
+selectCheckResult.STATION_CODE=A.STATION_CODE=<STATION_CODE>
+selectCheckResult.CLINICAREA_CODE=A.CLINICAREA_CODE=<CLINICAREA_CODE>
+	    ORDER BY A.CRTCLLWLMT,A.CASE_NO
+selectCheckResult.Debug=N
+
+// 更新状态
+onUpdateStat.Type=TSQL
+onUpdateStat.SQL=UPDATE MED_NODIFY SET &
+		 	SEND_STAT='2' &
+		 	WHERE    ORDER_CODE=<ORDER_CODE> &
+		 	AND     CASE_NO=<CASE_NO>
+onUpdateStat.Debug=N
+
+//根据主项查询细项的检验结果
+
+selectResultLIS.Type=TSQL
+selectResultLIS.SQL=SELECT A.TESTITEM_CHN_DESC,A.TEST_UNIT,A.UPPE_LIMIT,A.LOWER_LIMIT, &
+                    A.CRTCLUPLMT,A.CRTCLLWLMT,A.REMARK  FROM  MED_LIS_RPT A            
+selectResultLIS.item=CAT1_TYPE;APPLICATION_NO;ORDER_NO;SEQ_NO
+selectResultLIS.CAT1_TYPE=CAT1_TYPE=<CAT1_TYPE>
+selectResultLIS.APPLICATION_NO=APPLICATION_NO=<APPLICATION_NO>
+selectResultLIS.ORDER_NO=ORDER_NO=<ORDER_NO>
+selectResultLIS.SEQ_NO=SEQ_NO=<SEQ_NO>
+selectResultLIS.Debug=N
+
+//根据主项查询细项的检查结果
+selectResultRIS.Type=TSQL
+selectResultRIS.SQL=SELECT  OUTCOME_TYPE,OUTCOME_DESCRIBE,OUTCOME_CONCLUSION  FROM MED_RPTDTL
+selectResultRIS.item=CAT1_TYPE;APPLICATION_NO
+selectResultRIS.APPLICATION_NO=APPLICATION_NO=<APPLICATION_NO>
+selectResultRIS.CAT1_TYPE=CAT1_TYPE=<CAT1_TYPE>
+selectResultRIS.Debug=N

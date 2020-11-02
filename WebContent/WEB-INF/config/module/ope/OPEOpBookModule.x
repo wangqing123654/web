@@ -1,0 +1,175 @@
+####################################################
+#  Title:手术申请module
+# 
+#  Description:手术申请module
+# 
+#  Copyright: Copyright (c) Javahis 2008
+# 
+#  author zhangk 2009.9.24
+#  version 4.0
+####################################################
+Module.item=insertOpBook;selectOpBook;updateOpBook;updateOpBookForPersonnel;cancelOpBook;updateOPEState
+
+//插入手术申请
+//=============pangben modify 20110630 区域添加
+insertOpBook.Type=TSQL
+insertOpBook.SQL=INSERT INTO OPE_OPBOOK ( &
+			OPBOOK_SEQ,ADM_TYPE,MR_NO,IPD_NO,CASE_NO,&
+			BED_NO,URGBLADE_FLG,OP_DATE,TF_FLG,TIME_NEED,&
+			ROOM_NO,TYPE_CODE,ANA_CODE,OP_DEPT_CODE,OP_STATION_CODE,&
+			DIAG_CODE1,DIAG_CODE2,DIAG_CODE3,BOOK_DEPT_CODE,OP_CODE1,&
+			OP_CODE2,BOOK_DR_CODE,MAIN_SURGEON,BOOK_AST_1,BOOK_AST_2,&
+			BOOK_AST_3,BOOK_AST_4,REMARK,OPERATION_REMARK,STATE,CANCEL_FLG,&
+			OPT_USER,OPT_DATE,OPT_TERM,REGION_CODE &
+			//=========================add by wanglong 20121206
+			,PART_CODE,ISO_FLG,MIRROR_FLG,STERILE_FLG &
+			//=========================add by yanglu 20181115
+			,OP_ORDER_DATE &
+			//=========================
+			) VALUES ( &
+			<OPBOOK_SEQ>,<ADM_TYPE>,<MR_NO>,<IPD_NO>,<CASE_NO>,&
+			<BED_NO>,<URGBLADE_FLG>,TO_DATE(<OP_DATE>,'YYYYMMDDHH24MISS'),<TF_FLG>,<TIME_NEED>,&
+			<ROOM_NO>,<TYPE_CODE>,<ANA_CODE>,<OP_DEPT_CODE>,<OP_STATION_CODE>,&
+			<DIAG_CODE1>,<DIAG_CODE2>,<DIAG_CODE3>,<BOOK_DEPT_CODE>,<OP_CODE1>,&
+			<OP_CODE2>,<BOOK_DR_CODE>,<MAIN_SURGEON>,<BOOK_AST_1>,<BOOK_AST_2>,&
+			<BOOK_AST_3>,<BOOK_AST_4>,<REMARK>,<OPERATION_REMARK>,<STATE>,'N',&
+			<OPT_USER>,SYSDATE,<OPT_TERM>,<REGION_CODE> &
+			//=========================add by wanglong 20121206
+			,<PART_CODE>,<ISO_FLG>,<MIRROR_FLG>,<STERILE_FLG> &
+			//=========================add by yanglu 20181115
+			,SYSDATE &
+			)
+insertOpBook.Debug=N
+
+//修改手术
+updateOpBook.Type=TSQL
+updateOpBook.SQL=UPDATE OPE_OPBOOK SET &
+			ADM_TYPE=<ADM_TYPE>,&
+			BED_NO=<BED_NO>,&
+			URGBLADE_FLG=<URGBLADE_FLG>,&
+			OP_DATE=TO_DATE(<OP_DATE>,'YYYYMMDDHH24MISS'),&
+			TF_FLG=<TF_FLG>,&
+			TIME_NEED=<TIME_NEED>,&
+			ROOM_NO=<ROOM_NO>,&
+			TYPE_CODE=<TYPE_CODE>,&
+			ANA_CODE=<ANA_CODE>,&
+			OP_DEPT_CODE=<OP_DEPT_CODE>,&
+			OP_STATION_CODE=<OP_STATION_CODE>,&
+			DIAG_CODE1=<DIAG_CODE1>,&
+			DIAG_CODE2=<DIAG_CODE2>,&
+			DIAG_CODE3=<DIAG_CODE3>,&
+			BOOK_DEPT_CODE=<BOOK_DEPT_CODE>,&
+			OP_CODE1=<OP_CODE1>,&
+			OP_CODE2=<OP_CODE2>,&
+			BOOK_DR_CODE=<BOOK_DR_CODE>,&
+			MAIN_SURGEON=<MAIN_SURGEON>,&
+			BOOK_AST_1=<BOOK_AST_1>,&
+			BOOK_AST_2=<BOOK_AST_2>,&
+			BOOK_AST_3=<BOOK_AST_3>,&
+			BOOK_AST_4=<BOOK_AST_4>,&
+			REMARK=<REMARK>,&
+			OPERATION_REMARK=<OPERATION_REMARK>,&
+			OPT_USER=<OPT_USER>,&
+			OPT_DATE=SYSDATE,&
+			OPT_TERM=<OPT_TERM> &
+			//=========================add by wanglong 20121206
+			,PART_CODE=<PART_CODE>&
+			,ISO_FLG=<ISO_FLG> &
+			,MIRROR_FLG=<MIRROR_FLG> &
+			,STERILE_FLG=<STERILE_FLG> &
+			//=========================add by yanglu 20181115
+			,OP_ORDER_DATE=SYSDATE &
+			//=========================
+			WHERE OPBOOK_SEQ=<OPBOOK_SEQ>
+updateOpBook.Debug=N
+
+//查询
+selectOpBook.Type=TSQL
+selectOpBook.SQL=SELECT &
+		   A.OPBOOK_SEQ, A.ADM_TYPE, A.MR_NO, &
+		   A.IPD_NO, A.CASE_NO, A.BED_NO, &
+		   A.URGBLADE_FLG, A.OP_DATE, A.TF_FLG, &
+		   A.TIME_NEED, A.ROOM_NO, A.TYPE_CODE, &
+		   A.ANA_CODE, A.OP_DEPT_CODE, A.OP_STATION_CODE, &
+		   A.DIAG_CODE1, A.DIAG_CODE2, A.DIAG_CODE3, &
+		   A.BOOK_DEPT_CODE, A.OP_CODE1, A.OP_CODE2, &
+		   A.BOOK_DR_CODE, A.MAIN_SURGEON, A.BOOK_AST_1, &
+		   A.BOOK_AST_2, A.BOOK_AST_3, A.BOOK_AST_4, &
+		   A.CIRCULE_USER1, A.CIRCULE_USER2, A.CIRCULE_USER3, &
+		   A.CIRCULE_USER4, A.SCRUB_USER1, A.SCRUB_USER2, &
+		   A.SCRUB_USER3, A.SCRUB_USER4, A.ANA_USER1, &
+		   A.ANA_USER2, A.EXTRA_USER1, A.EXTRA_USER2, &
+		   A.PRE_NO, A.REMARK, A.STATE, &
+		   A.APROVE_DATE, A.APROVE_USER, A.OPT_USER, &
+		   A.OPT_DATE, A.OPT_TERM,B.PAT_NAME,A.CANCEL_FLG &
+	    	  //=========================add by wanglong 20121206
+	           ,A.PART_CODE,A.ISO_FLG,A.MIRROR_FLG,A.STERILE_FLG, &
+		  //=========================
+		  //=========================add by huangjw 20140904
+		  A.OPERATION_REMARK &
+		  //=========================
+		FROM OPE_OPBOOK A,SYS_PATINFO B &
+		WHERE A.MR_NO=B.MR_NO 
+		ORDER BY OP_DATE DESC,URGBLADE_FLG DESC
+selectOpBook.item=OPBOOK_SEQ;OP_DATE_S;OP_DATE_E;ADM_TYPE;MR_NO;IPD_NO;CASE_NO;TYPE_CODE;URGBLADE_FLG;OP_DEPT_CODE;OP_STATION_CODE;BOOK_DR_CODE;ROOM_NO;CANCEL_FLG;REGION_CODE;STATE;STERILE_FLG;MIRROR_FLG;ISO_FLG
+selectOpBook.OPBOOK_SEQ=A.OPBOOK_SEQ=<OPBOOK_SEQ>
+selectOpBook.ADM_TYPE=A.ADM_TYPE=<ADM_TYPE>
+//==================pangben modify 20110630 添加区域参数
+selectOpBook.REGION_CODE=A.REGION_CODE=<REGION_CODE>
+selectOpBook.OP_DATE_S=A.OP_DATE >= TO_DATE(<OP_DATE_S>,'YYYYMMDDHH24MISS')
+selectOpBook.OP_DATE_E=A.OP_DATE <= TO_DATE(<OP_DATE_E>,'YYYYMMDDHH24MISS')
+selectOpBook.MR_NO=A.MR_NO=<MR_NO>
+selectOpBook.IPD_NO=A.IPD_NO=<IPD_NO>
+selectOpBook.CASE_NO=A.CASE_NO=<CASE_NO>
+selectOpBook.TYPE_CODE=A.TYPE_CODE=<TYPE_CODE>
+selectOpBook.URGBLADE_FLG=A.URGBLADE_FLG=<URGBLADE_FLG>
+selectOpBook.OP_DEPT_CODE=A.OP_DEPT_CODE=<OP_DEPT_CODE>
+selectOpBook.OP_STATION_CODE=A.OP_STATION_CODE=<OP_STATION_CODE>
+selectOpBook.BOOK_DR_CODE=A.BOOK_DR_CODE=<BOOK_DR_CODE>
+selectOpBook.ROOM_NO=A.ROOM_NO=<ROOM_NO>
+selectOpBook.CANCEL_FLG=A.CANCEL_FLG=<CANCEL_FLG>
+//=============add by huangjw 20140903
+selectOpBook.STATE=A.STATE=<STATE>
+//=============
+selectOpBook.MIRROR_FLG=A.MIRROR_FLG=<MIRROR_FLG>
+selectOpBook.STERILE_FLG=A.STERILE_FLG=<STERILE_FLG>
+selectOpBook.ISO_FLG=A.ISO_FLG=<ISO_FLG>
+selectOpBook.Debug=N
+
+//修改手术申请的排程部分信息(手术排程)
+updateOpBookForPersonnel.Type=TSQL
+updateOpBookForPersonnel.SQL=UPDATE OPE_OPBOOK SET &
+				OP_DATE=TO_DATE(<OP_DATE>,'YYYYMMDDHH24MISS'),&
+				ROOM_NO=<ROOM_NO>,&
+				CIRCULE_USER1=<CIRCULE_USER1>,&
+				CIRCULE_USER2=<CIRCULE_USER2>,&
+				CIRCULE_USER3=<CIRCULE_USER3>,&
+				CIRCULE_USER4=<CIRCULE_USER4>,&
+				SCRUB_USER1=<SCRUB_USER1>,&
+				SCRUB_USER2=<SCRUB_USER2>,&
+				SCRUB_USER3=<SCRUB_USER3>,&
+				SCRUB_USER4=<SCRUB_USER4>,&
+				ANA_USER1=<ANA_USER1>,&
+				ANA_USER2=<ANA_USER2>,&
+				EXTRA_USER1=<EXTRA_USER1>,&
+				EXTRA_USER2=<EXTRA_USER2>,&
+				STATE=<STATE>,&
+				APROVE_DATE=TO_DATE(<APROVE_DATE>,'YYYYMMDDHH24MISS'),&
+				APROVE_USER=<APROVE_USER>,&
+				OPT_USER=<OPT_USER>,&
+				OPT_DATE=SYSDATE,&
+				OPT_TERM=<OPT_TERM> &
+				WHERE OPBOOK_SEQ=<OPBOOK_SEQ>
+updateOpBookForPersonnel.Debug=N
+
+//取消申请
+cancelOpBook.Type=TSQL
+cancelOpBook.SQL=UPDATE OPE_OPBOOK SET &
+			CANCEL_FLG='Y' &
+			WHERE OPBOOK_SEQ=<OPBOOK_SEQ>
+cancelOpBook.Debug=N
+
+//修改手术预约状态  0 申请， 1 排程完毕 ，2手术完成
+updateOPEState.Type=TSQL
+updateOPEState.SQL=UPDATE OPE_OPBOOK SET STATE=<STATE> WHERE OPBOOK_SEQ=<OPBOOK_SEQ>
+updateOPEState.Debug=N

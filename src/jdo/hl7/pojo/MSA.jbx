@@ -1,0 +1,10 @@
+[PropertyInfo]
+acknowledgmentCode,String,false,false, , ,false,<default>
+labNo,String,false,false, , ,false,<default>
+messageStater,String,false,false, , ,false,<default>
+msh,pojo.MSH,false,false, , ,false,<default>
+[IconNames]
+
+
+
+

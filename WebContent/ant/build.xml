@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="JavaHis" default="CopyFromExcel">
+	<property file="build.properties" />
+	<target name="CopyFromExcel"  >
+	<!-- target name="CopyFromExcel" --> 
+		<echo>正在初始化拷贝数据，请稍后...</echo>
+		<taskdef name="excel" classname="com.javahis.CopyFromExcel">
+			<classpath>
+				<fileset dir="${PUBLIC_LIB}" includes="*.jar" />
+			</classpath>
+		</taskdef>
+		<excel excelFilePath="${excelFilePath}"  copyType=".class" versionNumber="120000" classPrefixPath="" expandedName=".class" initRowNum="3" basedir="${projectClasses}" todir="${tomcatWebinfo}"/>
+		<excel excelFilePath="${excelFilePath}"  copyType=".x"   initRowNum="3" basedir="${javahis.home}" todir="${tomcatXconifg}"/>
+		<excel excelFilePath="${excelFilePath}"  copyType=".jhw"   initRowNum="3" basedir="${javahis.home}" todir="${tomcatXconifg}"/>
+	</target>
+</project>
