@@ -1215,10 +1215,10 @@ public class ADMInpControl extends TControl {
 				return;
 			}
 			rate = lumpParm.getDouble("RATE");
-			if (rate <= 0) {
-				this.messageBox("此病患套餐折扣存在问题，套餐折扣为:" + rate + ",不可以操作");
-				return;
-			}
+//			if (rate <= 0) {
+//				this.messageBox("此病患套餐折扣存在问题，套餐折扣为:" + rate + ",不可以操作");
+//				return;
+//			}
 		}
 		// System.out.println("adm_1");
 		BED_NO = parm.getData("BED_NO").toString();
@@ -1472,10 +1472,10 @@ public class ADMInpControl extends TControl {
 					return;
 				}
 				rate = lumpParm.getDouble("RATE");
-				if (rate <= 0) {
-					this.messageBox("此病患套餐折扣存在问题，套餐折扣为:" + rate + ",不可以操作");
-					return;
-				}
+//				if (rate <= 0) {
+//					this.messageBox("此病患套餐折扣存在问题，套餐折扣为:" + rate + ",不可以操作");
+//					return;
+//				}
 			}
 		}
 		parm.setData("LUMPWORK_RATE", rate);// 套餐折扣
