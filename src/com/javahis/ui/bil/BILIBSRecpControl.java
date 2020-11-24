@@ -577,12 +577,13 @@ public class BILIBSRecpControl extends TControl {
 			}
 		}
         
-        double totAmt = 0.00;
+//        double totAmt = 0.00;
         TParm endBillDParm = new TParm();
         String approveFlg = "";
         List bilrecGroup = new ArrayList(); // ========pangben modfiy 20110603
         // endBillDParm 分组
         String billNoSum="";
+        StringBuffer sb = new StringBuffer();
         for (int i = 0; i < billDCount; i++) {
             approveFlg = endChargeParm.getValue("APPROVE_FLG", i);
             if ("N".equals(approveFlg) || approveFlg.length() == 0) {
@@ -597,13 +598,14 @@ public class BILIBSRecpControl extends TControl {
             inBillDParm.setData("BILL_NO", billNo);
             inBillDParm.setData("BILL_SEQ", bilSeq);
 //            inBillDParm.setData("CASE_NO",caseNo);
-            System.out.println("第一步查询数据校验_________________________________________"+inBillDParm);
+//            System.out.println("第一步查询数据校验_________________________________________"+inBillDParm);
             TParm billdParm = new TParm();
             // 账单明细档数据
             billdParm = IBSBilldTool.getInstance()
                         .selDataForCharge(inBillDParm);
-            System.out.println("账单明细档数据_________________+++++++++++"+billdParm);
+//            System.out.println("账单明细档数据_________________+++++++++++"+billdParm);
             int inBillDCount = billdParm.getCount("BILL_NO");
+            double totAmt = 0.00;
             for (int j = 0; j < inBillDCount; j++) {
                 totAmt = totAmt + billdParm.getDouble("AR_AMT", j);
                 endBillDParm
@@ -628,8 +630,19 @@ public class BILIBSRecpControl extends TControl {
                     bilrecGroup.add(billdParm.getValue("REXP_CODE", j)
                                     + billNo);
             }
+            BigDecimal d = new BigDecimal(totAmt).setScale(2, RoundingMode.HALF_UP); 
+            BigDecimal m = new BigDecimal(endChargeParm.getDouble("AR_AMT", i)).setScale(2, RoundingMode.HALF_UP);
+            if(d.compareTo(m) != 0){
+            	sb.append("账单号："+billNo+"，账单序号："+bilSeq+"，主项金额："+m+"，细项金额："+d+"，主细项金额不同，不能保存；");
+            	sb.append("\n");
+    		}  
         }
-        System.out.println("endBillDParm数据整合_____________________"+endBillDParm);
+        if(sb.toString().length()>0) {
+        	System.out.println("---主细项金额不一致---\n"+sb.toString());
+        	this.messageBox(sb.toString());
+        	return false;
+        }
+//        System.out.println("endBillDParm数据整合_____________________"+endBillDParm);
         //========pangben 2014-4-14 添加预交金提示
    		TParm billPayTableParm =this.getTTable("BillPayTable").getParmValue();
    		boolean flg=true;
@@ -722,7 +735,7 @@ public class BILIBSRecpControl extends TControl {
             endBillDParms.addData("OPT_TERM", endBillDParm.getData("OPT_TERM",
                     i));
         }
-        System.out.println("endBillDParms数据整合_____________________"+endBillDParms);
+//        System.out.println("endBillDParms数据整合_____________________"+endBillDParms);
         // ==============pangben modify 20110603 stop
         // 住院流水号
         String receiptNo = SystemTool.getInstance().getNo("ALL", "IBS",
@@ -918,7 +931,7 @@ public class BILIBSRecpControl extends TControl {
             recpDParm.addData("OPT_USER", Operator.getID());
             recpDParm.addData("OPT_TERM", Operator.getIP());
         }
-        System.out.println("BIL_IBS_RECPD数据整合>>>>>>>>>>>>>>>>>>>>>>>>>"+recpDParm);
+//        System.out.println("BIL_IBS_RECPD数据整合>>>>>>>>>>>>>>>>>>>>>>>>>"+recpDParm);
         // 预交金数据
         TParm bilPayParm = new TParm();
         TParm inBilPayParm = new TParm();

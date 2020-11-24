@@ -5366,7 +5366,7 @@ public class OPBChargesMControl extends TControl {
 				+ recpParm.getValue("RECEIPT_NO") + "' AND (BILL_FLG='Y' OR MEM_PACKAGE_ID IS NOT NULL)";
 		//		System.out.println("ownSql=="+ownSql);
 		TParm ownParm = new TParm(TJDODBTool.getInstance().select(ownSql));
-		double ownAmt = ownParm.getDouble("OWN_AMT"); //折扣之前的价钱
+		double ownAmt = ownParm.getDouble("OWN_AMT", 0); //折扣之前的价钱
 		//		double totAmt = recpParm.getDouble("TOT_AMT", 0); //折扣之后的价钱
 		double arAmt = recpParm.getDouble("AR_AMT");  //实收
 		//		double reduceAmt=recpParm.getDouble("REDUCE_AMT", 0); //减免
@@ -5552,7 +5552,7 @@ public class OPBChargesMControl extends TControl {
 		//				recpParm.getTimestamp("BILL_DATE", 0), "yyyy/MM/dd HH:mm:ss"));//结算日期
 		oneReceiptParm.setData("BILL_DATE", StringTool.getString(
 				recpParm.getTimestamp("BILL_DATE"), "yyyy/MM/dd HH:mm:ss"));//结算日期
-		oneReceiptParm.setData("AR_AMT", df.format(recpParm.getDouble("AR_AMT", 0)));//合计
+//		oneReceiptParm.setData("AR_AMT", df.format(recpParm.getDouble("AR_AMT", 0)));//合计
 		//====================20140609 liling  modify end  ===========================
 		// =================20120219 zhangp modify start
 		//		oneReceiptParm.setData("CHARGE01", "TEXT", df.format(recpParm
