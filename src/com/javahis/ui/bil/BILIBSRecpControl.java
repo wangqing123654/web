@@ -578,6 +578,7 @@ public class BILIBSRecpControl extends TControl {
 		}
         
 //        double totAmt = 0.00;
+        double dTot = 0.00;
         TParm endBillDParm = new TParm();
         String approveFlg = "";
         List bilrecGroup = new ArrayList(); // ========pangben modfiy 20110603
@@ -608,6 +609,7 @@ public class BILIBSRecpControl extends TControl {
             double totAmt = 0.00;
             for (int j = 0; j < inBillDCount; j++) {
                 totAmt = totAmt + billdParm.getDouble("AR_AMT", j);
+                dTot = dTot + billdParm.getDouble("AR_AMT", j);
                 endBillDParm
                         .addData("BILL_NO", billdParm.getData("BILL_NO", j));
                 endBillDParm.addData("BILL_SEQ", billdParm.getData("BILL_SEQ",
@@ -637,6 +639,7 @@ public class BILIBSRecpControl extends TControl {
             	sb.append("\n");
     		}  
         }
+        System.out.println("---dTot---"+dTot);
         if(sb.toString().length()>0) {
         	System.out.println("---主细项金额不一致---\n"+sb.toString());
         	this.messageBox(sb.toString());
@@ -994,10 +997,22 @@ public class BILIBSRecpControl extends TControl {
         
         // 校验细项金额和界面校验yanmm
         double totCheck = StringTool.getDouble(this.getValueString("TOT_AMT"));
+        BigDecimal ddd = new BigDecimal(recpDAmtCheck).setScale(2, RoundingMode.HALF_UP); 
+        BigDecimal mmm = new BigDecimal(totCheck).setScale(2, RoundingMode.HALF_UP);
+        System.out.println("---totCheck---"+totCheck);
+    	System.out.println("---recpDAmtCheck---"+recpDAmtCheck); 
+        System.out.println("---mmm---"+mmm);
+    	System.out.println("---ddd---"+ddd);
         if(recpDAmtCheck != totCheck){
+//        	this.messageBox("主细项金额不同,不执行保存");
+//			return false;      	
+        	System.out.println("---主细项金额不同,不执行保存---111---");
+        }
+        if(ddd.compareTo(mmm) != 0){ 	
+        	System.out.println("---主细项金额不同,不执行保存---222---");
         	this.messageBox("主细项金额不同,不执行保存");
 			return false;
-        }
+		}  
         allParm.setData("RECPD", recpDParm.getData());
         allParm.setData("BILPAY", inBilPayParm.getData());
         // 票据主档信息
