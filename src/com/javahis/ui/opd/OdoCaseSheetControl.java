@@ -1923,8 +1923,11 @@ public class OdoCaseSheetControl extends TControl {
     						flg="  ";
     					}
     					parmData.addData("FLG", flg+" "+bottParm.getValue("LINK_NO",k));
-        				parmData.addData("ORDER_DESC", bottParm.getValue("ORDER_DESC", k));
-        		        parmData.addData("DISPENSE_QTY",bottParm.getValue("DISPENSE_QTY", k));
+        				parmData.addData("ORDER_DESC", bottParm.getValue("ORDER_DESC", k));        		        
+        		        // 显示输注速率
+        		        DecimalFormat df = new DecimalFormat("#####0.000");
+        		        parmData.addData("DISPENSE_QTY",bottParm.getValue("DISPENSE_QTY", k)+" "+df.format(bottParm.getDouble("INFLUTION_RATE", k)));
+        		        //     
         		        parmData.addData("FREQ_CHN_DESC",bottParm.getValue("FREQ_CHN_DESC", k));
         		        parmData.addData("ROUTE_CHN_DESC", bottParm.getValue("ROUTE_CHN_DESC", k));
         		        parmData.addData("DR_NOTE", bottParm.getValue("DR_NOTE",k));//添加医师备注 add by huangjw 20141222
@@ -1973,7 +1976,7 @@ public class OdoCaseSheetControl extends TControl {
         			inParam.setData("OpdNewExaName_I", "TEXT", opdNewName);
         			inParam.setData("SKINTESTM","TEXT",psno);
         			inParam.setData("SKINTESTB","TEXT",psresult);
-        			
+        			//
         			word3.setWordParameter(IReportTool.getInstance().getReportParm("OpdBottleLabelOrder_I_V45.class",inParam));
         			word3.setPreview(true);
         			word3.setFileName(IReportTool.getInstance().getReportPath("OpdBottleLabelOrder_I_V45.jhw"));

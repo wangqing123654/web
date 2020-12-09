@@ -2624,6 +2624,9 @@ public class ODOMainOpdOrder {
 		odoMainControl.pay.onTempSave(ektOrderParm, ektOrderParmone, ektSumExeParm);
 //		onExeFee();//暫存預開檢查消失   yanjing 注 20140331
 		
+		// 保存成功提示
+		odoMainControl.messageBox("P0001"); 
+		
 		//modify by huangtt 20141118
 		switch (isKeyIn) {
 		case 1:
