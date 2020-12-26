@@ -4,7 +4,9 @@ import java.sql.Timestamp;
 
 import javax.swing.JOptionPane;
 
+
 import jdo.adm.ADMTool;
+import jdo.reg.PatAdmTool;
 import jdo.reg.Reg;
 import jdo.sys.Pat;
 import jdo.sys.SystemTool;
@@ -12,6 +14,7 @@ import jdo.sys.SystemTool;
 import com.dongyang.control.TControl;
 import com.dongyang.data.TParm;
 import com.dongyang.jdo.TJDODBTool;
+import com.dongyang.jdo.TJDOTool;
 import com.dongyang.util.StringTool;
 import com.javahis.util.DateUtil;
 import com.javahis.util.StringUtil;
@@ -35,7 +38,33 @@ public class ADMWristPrintControl extends TControl{
 		admInfo = ADMTool.getInstance().getADM_INFO(admParm);
 	    Timestamp sysDate = SystemTool.getInstance().getDate();
 	    age = DateUtil.showAge(pat.getBirthday(), sysDate);
-	    
+	    //  
+	}
+	
+	/**
+	 * 得到科室
+	 * 
+	 * @return
+	 */
+	private String getDeptDesc() {
+		// 先获取住院科室，如果没有住院科室，就获取挂号科室
+		String deptCode = admInfo.getValue("DEPT_CODE", 0);
+		if (deptCode == null || deptCode.length() == 0) {
+			// 查询最近一次挂号数据
+			String sql = "SELECT CASE_NO, REALDEPT_CODE FROM REG_PATADM WHERE MR_NO = '" + mrNo
+					+ "' ORDER BY REG_DATE DESC";
+			TParm result = new TParm(TJDODBTool.getInstance().select(sql));
+			if (result.getCount("CASE_NO") > 0) {
+				result = result.getRow(0);
+			} else {
+				result = null;
+			}
+			if (result != null) {
+				deptCode = result.getValue("REALDEPT_CODE");
+			}
+		}
+		String deptDesc = StringUtil.getDesc("SYS_DEPT", "DEPT_CHN_DESC", "DEPT_CODE='" + deptCode + "'");
+		return deptDesc;
 	}
 	//成人腕带打印
 	public void onWristAdult(){
@@ -65,8 +94,8 @@ public class ADMWristPrintControl extends TControl{
 		print.setData("WEIGHT", "TEXT", "体重:"+pat.getWeight()+ "KG");
 		//得到年龄
     	print.setData("Age", "TEXT", "年龄:"+age);
-    	//得到科室
-    	print.setData("Dept", "TEXT", "科室:"+StringUtil.getDesc("SYS_DEPT", "DEPT_CHN_DESC", "DEPT_CODE='" + admInfo.getValue("DEPT_CODE", 0) + "'"));
+		// 得到科室
+		print.setData("Dept", "TEXT", "科室:" + this.getDeptDesc());
     	//得到床号
     	print.setData("BedNO","TEXT","床号:"+admInfo.getValue("BED_NO",0));
     	//this.messageBox_(print);
@@ -88,7 +117,7 @@ public class ADMWristPrintControl extends TControl{
 		//得到年龄
     	print.setData("Age", "TEXT", "年龄:"+age);
     	//得到科室
-    	print.setData("Dept", "TEXT", "科室:"+StringUtil.getDesc("SYS_DEPT", "DEPT_CHN_DESC", "DEPT_CODE='" + admInfo.getValue("DEPT_CODE", 0) + "'"));
+    	print.setData("Dept", "TEXT", "科室:"+this.getDeptDesc());
     	//得到床号
     	print.setData("BedNO","TEXT","床号:"+admInfo.getValue("BED_NO",0));
     	//this.messageBox_(print);
@@ -115,7 +144,7 @@ public class ADMWristPrintControl extends TControl{
 		//得到年龄
     	print.setData("Age", "TEXT", "年龄:"+age);
     	//得到科室
-    	print.setData("Dept", "TEXT", "科室:"+StringUtil.getDesc("SYS_DEPT", "DEPT_CHN_DESC", "DEPT_CODE='" + admInfo.getValue("DEPT_CODE", 0) + "'"));
+    	print.setData("Dept", "TEXT", "科室:"+this.getDeptDesc());
     	//得到床号
     	print.setData("BedNO","TEXT","床号:"+admInfo.getValue("BED_NO",0));
     	//this.messageBox_(print);

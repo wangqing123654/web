@@ -6549,8 +6549,9 @@ public class OPBChargesMControl extends TControl {
 	}
 	/**
 	 * 腕带打印
+	 * @deprecated
 	 */
-	public void onWrist() {
+	public void onWrist111() {
 		if (this.getValueString("MR_NO").length() == 0 || 
 				this.getValueString("PAT_NAME").length() == 0 ||
 				this.getValueString("SEX_CODE").length() == 0) {
@@ -6587,6 +6588,25 @@ public class OPBChargesMControl extends TControl {
 		this.openPrintDialog("%ROOT%\\config\\prt\\opb\\OPBChargesM.jhw", print);
 		//        this.openPrintDialog(IReportTool.getInstance().getReportPath("REGPatAdm.jhw"),
 		//                             IReportTool.getInstance().getReportParm("REGPatAdm.class", print));//报表合并modify by wanglong 20130730
+	}
+	
+	/**
+	 * 腕带打印
+	 */
+	public void onWrist() {
+		TParm print = new TParm();
+		// 得到姓名
+		print.setData("PatName", "TEXT", "姓名:" + pat.getName());
+		// 得到病案号
+		print.setData("Barcode1", "TEXT", pat.getMrNo());
+		// 得到性别
+		print.setData("Sex", "TEXT", "性别:" + pat.getSexString());
+		// 得到出生日期
+		print.setData("BirthDay", "TEXT", "出生日期:" + StringTool.getString(pat.getBirthday(), "yyyy/MM/dd HH:mm"));
+		// 得到科室
+		print.setData("Dept", "TEXT",
+				"科室:" + StringUtil.getDesc("SYS_DEPT", "DEPT_CHN_DESC", "DEPT_CODE='" + reg.getRealdeptCode() + "'"));
+		this.openPrintDialog("%ROOT%\\config\\prt\\ADM\\ADMWristAdult.jhw", print, true);
 	}
 
 	public void changeChargeText(){
