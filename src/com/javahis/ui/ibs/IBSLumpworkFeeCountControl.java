@@ -114,10 +114,10 @@ public class IBSLumpworkFeeCountControl extends TControl {
 			return;
 		}
 		double rate = lumpParm.getDouble("RATE");
-//		if (rate <= 0) {
-//			this.messageBox("此病患套餐折扣存在问题，套餐折扣为:" + rate + ",不可以操作");
-//			return;
-//		}
+		if (rate <= 0) {
+			this.messageBox("此病患套餐折扣存在问题，套餐折扣为:" + rate + ",不可以操作");
+			return;
+		}
 		if(this.messageBox("提示", "套餐折扣为:"+rate+",是否继续", 2)!=0){
 			return;
 		}
