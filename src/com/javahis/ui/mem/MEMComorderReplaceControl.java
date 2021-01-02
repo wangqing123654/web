@@ -202,6 +202,8 @@ public class MEMComorderReplaceControl extends TControl{
 		
 		tableParm = new TParm(TJDODBTool.getInstance().select(sql));
 		if(tableParm.getCount() < 0){
+			table.removeRowAll();
+			//
 			this.messageBox("没有要查询的数据");
 			return;
 		}
@@ -282,8 +284,10 @@ public class MEMComorderReplaceControl extends TControl{
     	this.clearText(TAG_ORDER_DESC);
     }
     
-    public void onUpdate(){    	
-    	
+    public void onUpdate(){ 
+    	// 每次更新前都执行一次批量替换，避免出现新医嘱为空的问题
+    	this.onBatchReplace();	
+    	//
     	for (int i = 0; i < newOrderParm.getCount("ORDER_CODE") ; i++) {
 			if(newOrderParm.getBoolean("HIDE_FLG",i)){
 				String id = SystemTool.getInstance().getNo("ALL", "EKT", "MEM_NO","MEM_NO");
