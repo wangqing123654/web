@@ -3500,7 +3500,12 @@ public class ADMInpControl extends TControl {
 					+ " WHERE A.TRADE_NO = B.TRADE_NO " + " AND B.PACKAGE_CODE = C.PACKAGE_CODE "
 					+ " AND B.PACKAGE_CODE='" + lumpWork + "' AND A.MR_NO='" + MR_NO
 					+ "' AND   C.PARENT_PACKAGE_CODE IS NOT NULL AND "
-					+ "B.REST_TRADE_NO IS NULL AND C.ADM_TYPE='I'  GROUP BY B.PACKAGE_CODE, C.PACKAGE_DESC, A.AR_AMT,C.CTZ_CODE,A.TRADE_NO";
+					+ "B.REST_TRADE_NO IS NULL AND C.ADM_TYPE='I'  "
+					//
+					+ " AND A.USED_FLG = '0' "// 未使用
+					//
+					+ " GROUP BY B.PACKAGE_CODE, C.PACKAGE_DESC, A.AR_AMT,C.CTZ_CODE,A.TRADE_NO";
+			System.out.println("sql111:::::"+sql);
 			TParm data = new TParm(TJDODBTool.getInstance().select(sql));// 获取套餐身份信息--xiongwg20150702
 			if (data.getCount() <= 0) {
 				this.messageBox("套餐数据有问题");
