@@ -4709,6 +4709,10 @@ public class OPBChargesMControl extends TControl {
 	 */
 	public void onEKT() {
 		txReadEKT();
+		// 读卡时，支付方式切换为“医疗卡”
+		TRadioButton ektPay = (TRadioButton) getComponent("tRadioButton_1");
+		ektPay.setSelected(true);
+		onGatherChange(1);
 	}
 
 	public void onEKTPrint() {
