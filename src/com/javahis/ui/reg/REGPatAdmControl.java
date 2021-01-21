@@ -1831,6 +1831,8 @@ public class REGPatAdmControl extends TControl {
 		btton.setEnabled(false);
 		callFunction("UI|INSURE_INFO|setEnabled", true);//add by huangjw 20150731
 		callFunction("UI|PAT_PACKAGE|setEnabled", true);//add by huangjw 20150731
+		// 
+		this.checkInsures();
 	}
 
 	/**
@@ -7466,5 +7468,34 @@ public class REGPatAdmControl extends TControl {
 				+ ctz + "'";
 		TParm parm = new TParm(TJDODBTool.getInstance().select(sql));
 		this.setValue("SERVICE_LEVEL", parm.getValue("SERVICE_LEVEL", 0));
+	}
+	
+	/**
+	 * 根据保险有效期在门急诊挂号页面增加相应提示
+	 * 当挂号日期大于任意一个保险有效期的截止日期时，门急诊挂号界面添加相应保险公司的到期提醒
+	 */
+	private void checkInsures() {
+		String sql = "SELECT A.MR_NO, A.CONTRACTOR_CODE, A.INSURANCE_NUMBER, A.VALID_FLG, A.START_DATE, A.END_DATE, B.CONTRACTOR_DESC FROM MEM_INSURE_INFO A LEFT JOIN MEM_CONTRACTOR B ON A.CONTRACTOR_CODE = B.CONTRACTOR_CODE "
+				+ " WHERE MR_NO = '" + this.getValueString("MR_NO") + "' ";
+		TParm parm = new TParm(TJDODBTool.getInstance().select(sql));
+		int count = parm.getCount("MR_NO");
+		if (count > 0) {
+			Date endDate;
+			Date now = SystemTool.instanceObject.getDate();
+			String contractorDesc;
+			String insuranceNumber;
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < count; i++) {
+				contractorDesc = parm.getValue("CONTRACTOR_DESC", i);
+				insuranceNumber = parm.getValue("INSURANCE_NUMBER", i);
+				endDate = parm.getTimestamp("END_DATE", i);
+				if (endDate.before(now)) {
+					sb.append("保险公司<"+contractorDesc + ">，保险单号<"+insuranceNumber+">，合同到期；" + "\n\r");
+				}
+			}
+			if (sb.toString().length() > 0) {
+				this.messageBox(sb.toString());
+			}
+		}
 	}
 }
