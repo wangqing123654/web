@@ -2074,7 +2074,7 @@ public class OdoCaseSheetControl extends TControl {
 			String sql = "SELECT RX_NO, PHA_RETN_DATE FROM OPD_ORDER WHERE RX_NO = '" + rxNo
 					+ "' AND PHA_RETN_DATE IS NOT NULL AND RX_TYPE = '" + rxType + "'";
 			TParm result = new TParm(TJDODBTool.getInstance().select(sql));
-			if (result.getCount() > 0) {
+			if (result.getCount("RX_NO") > 0) {
 				this.messageBox("药房已完成" + rxDesc + "药品的退药操作，请创建新处方后再进行打印操作");
 				return true;
 			} else {
