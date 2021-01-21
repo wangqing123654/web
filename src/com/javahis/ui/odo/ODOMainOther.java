@@ -874,7 +874,7 @@ public class ODOMainOther implements DMessageIO {
 //		gc.add(1, 1);
 //		gc.add(2, -3);
 //		gc.add(5, 7);
-		gc.add(Calendar.DATE, 280);// EDC的计算公式，LMP直接加280天计算得到EDC
+		gc.add(Calendar.DATE, 279);// EDC的计算公式，LMP直接加279天计算得到EDC
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		String dateString=formatter.format(gc.getTime());
 		return dateString;
