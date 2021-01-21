@@ -1833,6 +1833,7 @@ public class REGPatAdmControl extends TControl {
 		callFunction("UI|PAT_PACKAGE|setEnabled", true);//add by huangjw 20150731
 		// 
 		this.checkInsures();
+		this.checkCtz1Code();
 	}
 
 	/**
@@ -7496,6 +7497,25 @@ public class REGPatAdmControl extends TControl {
 			if (sb.toString().length() > 0) {
 				this.messageBox(sb.toString());
 			}
+		}
+	}
+	
+	/**
+	 * 门急诊挂号时，读医疗卡或手输病案号后，如果患者身份已停用，
+	 * 
+	 * 1、添加提示“该患者原身份【99 门诊[自费]】已停用，请在【患者注册页面】重新设定”
+	 * 
+	 * 2、清空门急诊挂号界面中的“身份一”和“挂号身份一”中的值
+	 */
+	private void checkCtz1Code() {
+		String ctz1Code = this.getValueString("CTZ1_CODE");
+		String sql = "SELECT CTZ_CODE, CTZ_DESC, USE_FLG FROM SYS_CTZ WHERE CTZ_CODE = '" + ctz1Code + "'";
+		TParm parm = new TParm(TJDODBTool.getInstance().select(sql));
+		if (!parm.getBoolean("USE_FLG", 0)) {
+			String ctzDesc = parm.getValue("CTZ_DESC", 0);
+			this.messageBox("该患者原身份【" + ctzDesc + "】已停用，请在【患者注册页面】重新设定");
+			this.setValue("CTZ1_CODE", "");
+			this.setValue("REG_CTZ1", "");
 		}
 	}
 }
