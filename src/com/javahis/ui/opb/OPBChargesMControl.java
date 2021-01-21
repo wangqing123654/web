@@ -5620,7 +5620,14 @@ public class OPBChargesMControl extends TControl {
 				if (!"".equals(remark02) && !"#".equals(remark02)) {// 存在卡类型和卡号
 					String[] strArray = remark02.split("#");
 					String card_Type[] = strArray[0].split(";");// 卡类型
-					String reMark[] = strArray[1].split(";");// 卡号
+//					String reMark[] = strArray[1].split(";");// 卡号
+					// 处理备注为空的情况
+					String reMark[] = null;
+					if (strArray.length > 1) {
+						reMark = strArray[1].split(";");// 备注
+					} else {
+						reMark = new String[] { "" };
+					}
 					for (int m = 0; m < card_Type.length; m++) {
 						if (null != card_Type[m] && !"".equals(card_Type[m])) {
 							String cardsql = "SELECT CHN_DESC FROM SYS_DICTIONARY WHERE ID='"
@@ -5648,8 +5655,15 @@ public class OPBChargesMControl extends TControl {
 				if (!"".equals(remark09) && !"#".equals(remark09)) {// 存在卡类型和卡号
 					String[] strArray = remark09.split("#");
 					String card_Type[] = strArray[0].split(";");// 卡类型
-					String reMark[] = strArray[1].split(";");// 备注
-					wxBusinessNo=parm4.getValue("WX_BUSINESS_NO",0);
+//					String reMark[] = strArray[1].split(";");// 备注
+						// 处理备注为空的情况
+						String reMark[] = null;
+						if (strArray.length > 1) {
+							reMark = strArray[1].split(";");// 备注
+						} else {
+							reMark = new String[] { "" };
+						}
+						wxBusinessNo=parm4.getValue("WX_BUSINESS_NO",0);
 					for (int m = 0; m < card_Type.length; m++) {
 						if (null != card_Type[m] && !"".equals(card_Type[m])) {
 							String cardsql = "SELECT CHN_DESC FROM SYS_DICTIONARY WHERE ID='"
@@ -5679,7 +5693,14 @@ public class OPBChargesMControl extends TControl {
 				if (!"".equals(remark10) && !"#".equals(remark10)) {// 存在卡类型和卡号
 					String[] strArray = remark10.split("#");
 					String card_Type[] = strArray[0].split(";");// 卡类型
-					String reMark[] = strArray[1].split(";");// 备注
+//					String reMark[] = strArray[1].split(";");// 备注
+					// 处理备注为空的情况
+					String reMark[] = null;
+					if (strArray.length > 1) {
+						reMark = strArray[1].split(";");// 备注
+					} else {
+						reMark = new String[] { "" };
+					}
 					zfbBusinessNo=parm4.getValue("ZFB_BUSINESS_NO",0);
 					for (int m = 0; m < card_Type.length; m++) {
 						if (null != card_Type[m] && !"".equals(card_Type[m])) {
