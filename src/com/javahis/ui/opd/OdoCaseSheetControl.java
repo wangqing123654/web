@@ -83,6 +83,7 @@ public class OdoCaseSheetControl extends TControl {
     private String typeChange = "1";
 	private boolean  pflag=false;//判断是否已经做过皮试 caoyong
 	private Map<String,Boolean> dfMap ;//用于保存已打印的底方处方签号 RX_NO
+	
     public void onInit() {
         super.onInit();
         initParameter();
@@ -1196,6 +1197,11 @@ public class OdoCaseSheetControl extends TControl {
         	this.messageBox("请选择处方");
         	return;
         }
+		//
+		if (this.checkReturn()) {
+			return;
+		}
+		//
         /*String kFlg=table.getItemString(row, "K_FLG");//口服
         //String dFlg=table.getItemString(row, "D_FLG");
         String sFlg=table.getItemString(row, "S_FLG");//输液
@@ -2053,4 +2059,31 @@ public class OdoCaseSheetControl extends TControl {
     		}
     		table.setParmValue(tableParm);
     	}
+    	
+	/**
+	 * 门急诊医生工作站中选择补打处方时（包括打印与多条打印）， 如果处方为退药已完成的状态，已退药的处方不进行处方打印操作，
+	 * 并提示“药房已完成第n张处方药品的退药操作，请创建新处方后再进行打印操作。
+	 * 
+	 * @return
+	 */
+	private boolean checkReturn() {
+		int row = table.getSelectedRow();
+		if (rxType == "1" || rxType == "3") {// 西药、中药
+			String rxNo = table.getParmValue().getValue("RX_NO", row);
+			String rxDesc = table.getParmValue().getValue("RX_DESC", row);
+			String sql = "SELECT RX_NO, PHA_RETN_DATE FROM OPD_ORDER WHERE RX_NO = '" + rxNo
+					+ "' AND PHA_RETN_DATE IS NOT NULL AND RX_TYPE = '" + rxType + "'";
+			TParm result = new TParm(TJDODBTool.getInstance().select(sql));
+			if (result.getCount() > 0) {
+				this.messageBox("药房已完成" + rxDesc + "药品的退药操作，请创建新处方后再进行打印操作");
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	
 }
