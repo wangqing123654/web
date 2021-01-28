@@ -27,7 +27,7 @@ import com.dongyang.ui.edit.TAttributeList;
 public class TextFormataMemPckgDsctRsn extends TTextFormat {
 	public String getPopupMenuSQL() {
 
-		String sql = " SELECT ID,CHN_DESC AS NAME,ENG_DESC AS ENNAME,PY1  FROM SYS_DICTIONARY WHERE GROUP_ID = 'MEM_PCKG_DSCT_RSN' ORDER BY SEQ ";
+		String sql = " SELECT ID,CHN_DESC AS NAME,ENG_DESC AS ENNAME,PY1  FROM SYS_DICTIONARY WHERE GROUP_ID = 'MEM_PCKG_DSCT_RSN' AND ACTIVE_FLG = 'Y' ORDER BY SEQ ";
 		return sql;
 	}
 
