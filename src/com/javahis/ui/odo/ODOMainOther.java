@@ -1868,23 +1868,23 @@ public class ODOMainOther implements DMessageIO {
 	 * 保存主诉客诉
 	 */
 	public void saveSubjrec() throws Exception {
-		odoMainControl.odo.getSubjrec().setActive(0, true);
+		odoMainControl.odo.getSubjrec().setActive(0, true);;
 		odoMainControl.odo.getSubjrec().setItem(0, "SUBJ_TEXT",
-				word.getCaptureValueNoDel("SUB"));
+				word.getCaptureValueNoDel("SUB").replaceAll("'", "''"));
 		odoMainControl.odo.getSubjrec().setItem(0, "OBJ_TEXT",
-				word.getCaptureValueNoDel("OBJ"));
+				word.getCaptureValueNoDel("OBJ").replaceAll("'", "''"));
 		odoMainControl.odo.getSubjrec().setItem(0, "PHYSEXAM_REC",
-				word.getCaptureValueNoDel("PHY"));
+				word.getCaptureValueNoDel("PHY").replaceAll("'", "''"));
 		odoMainControl.odo.getSubjrec().setItem(0, "PROPOSAL",
-				word.getCaptureValueNoDel("PROPOSAL"));
+				word.getCaptureValueNoDel("PROPOSAL").replaceAll("'", "''"));
 		odoMainControl.odo.getSubjrec().setItem(0, "EXA_RESULT",
-				word.getCaptureValueNoDel("EXA_RESULT"));
+				word.getCaptureValueNoDel("EXA_RESULT").replaceAll("'", "''"));
 		//add by huangtt 增加评估2017
 		odoMainControl.odo.getSubjrec().setItem(0, "ASSESSMENT",
-				word.getCaptureValueNoDel("ASSESSMENT"));
+				word.getCaptureValueNoDel("ASSESSMENT").replaceAll("'", "''"));
 		// add by wangb 增加用药情况 2017/10/13
 		odoMainControl.odo.getSubjrec().setItem(0, "MEDICATION",
-				word.getCaptureValueNoDel("MEDICATION"));
+				word.getCaptureValueNoDel("MEDICATION").replaceAll("'", "''"));
 		if ("N".equalsIgnoreCase(odoMainControl.odo.getRegPatAdm()
 				.getItemString(0, "SEE_DR_FLG"))) {
 			//表中已存在主诉现病史病历
