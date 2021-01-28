@@ -958,16 +958,16 @@ public class ODOMainReg {
 					Operator.getID());
 		}
 		
-//		//zhangp 20131206
-//		String regionCode = Operator.getRegion();
-//		String optUser = Operator.getID();
-//		String optTerm = Operator.getIP();
-//		if((!aheadFlg) && odoMainControl.odoMainEkt.preDebtFlg){
-//			TParm result = EKTpreDebtTool.getInstance().insertOpdClinicFee(odoMainControl.caseNo, regionCode, optUser, optTerm);
-//			if(result.getErrCode()<0){
-//				odoMainControl.messageBox("诊查费插入失败");
-//			}
-//		}
+		//zhangp 20131206
+		String regionCode = Operator.getRegion();
+		String optUser = Operator.getID();
+		String optTerm = Operator.getIP();
+		if((!aheadFlg) && odoMainControl.odoMainEkt.preDebtFlg){
+			TParm result = EKTpreDebtTool.getInstance().insertOpdClinicFee(odoMainControl.caseNo, regionCode, optUser, optTerm);
+			if(result.getErrCode()<0){
+				odoMainControl.messageBox("诊查费插入失败");
+			}
+		}
 	}
 	
 	public void onRegClear() throws Exception{

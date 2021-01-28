@@ -10,6 +10,7 @@ import jdo.opd.OrderTool;
 import jdo.reg.PanelTypeFeeTool;
 import jdo.reg.PatAdmTool;
 import jdo.sys.SYSFeeTool;
+import jdo.sys.SysFee;
 import jdo.sys.SystemTool;
 
 import com.dongyang.data.TParm;
@@ -407,6 +408,9 @@ public class EKTpreDebtTool extends TJDODBTool {
 	        double clinicFee = BILStrike.getInstance().chargeCTZ(regParm.getValue("CTZ1_CODE"), regParm.getValue("CTZ2_CODE"), regParm.getValue("CTZ3_CODE"), orderCode,
 	        		regParm.getValue("SERVICE_LEVEL"));
 	        
+	        // Ó¦ÊÕ½ð¶î add by wangqing 2021/1/28
+	        double ownAmt = SysFee.getFee(orderCode,regParm.getValue("SERVICE_LEVEL"));
+	        
 	        String hexpCode = sysFeeParm.getValue("CHARGE_HOSP_CODE");
 	        String sql = 
 	        	"SELECT OPD_CHARGE_CODE FROM SYS_CHARGE_HOSP WHERE CHARGE_HOSP_CODE = '" + hexpCode + "'";
@@ -450,7 +454,7 @@ public class EKTpreDebtTool extends TJDODBTool {
 				" 'N', '" + orderCode + "', '" + sysFeeParm.getValue("ORDER_DESC") + "', '" + sysFeeParm.getValue("ORDER_CAT1_CODE") + "', 1, " +
 				" '', 1, 1, '', 1, " +
 				" '', '', " + sysFeeParm.getValue("OWN_PRICE") + ", " + sysFeeParm.getValue("NHI_PRICE") + ", " + rate + ", " +
-				" " + sysFeeParm.getValue("OWN_PRICE") + ", " + clinicFee + ", '" + regParm.getValue("REALDR_CODE") + "', SYSDATE, '" + regParm.getValue("REALDEPT_CODE") + "', " +
+				" " + ownAmt + ", " + clinicFee + ", '" + regParm.getValue("REALDR_CODE") + "', SYSDATE, '" + regParm.getValue("REALDEPT_CODE") + "', " +
 				" '" + regParm.getValue("REALDEPT_CODE") + "', 'N', '', '', 'N', " +
 				" '', 'N', 'C', 'W', 'O', " +
 				" 'N', 'N', 0, 'N', 'N', " +
