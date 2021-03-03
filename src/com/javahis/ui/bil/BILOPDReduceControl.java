@@ -747,6 +747,11 @@ public class BILOPDReduceControl extends TControl {
 			this.messageBox("减免金额不能大于费用总额");
 			return;
 		}
+		// 避免手动输入带来的问题
+		if(this.getValue("REDUCE_NOTE") == null) {
+			this.messageBox("请选择减免原因");
+			return;
+		}
 		String reduce_no = SystemTool.getInstance().getNo("ALL", "OPB",
 				"REDUCE_NO", "REDUCE_NO");
 		TParm result = new TParm();
