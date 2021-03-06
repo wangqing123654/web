@@ -162,8 +162,8 @@ public class SYSCategoryControl extends TControl{
                             " AND CATEGORY_CODE like '" + id + "%' ");
         }
         table.filter();
-        table.setSort("SEQ");
-        table.sort();
+//        table.setSort("SEQ");
+//        table.sort();
     }
     /**
      * 属性Table改变值
@@ -310,7 +310,7 @@ public class SYSCategoryControl extends TControl{
             messageBox_("超过最大层数,不能新增!");
             return;
         }
-        String no = ruleTool.getNewCodeByString(maxCode,classify);
+        String no = ruleTool.getNewCode(parentID, dataStore, classify);
         int seq=getMaxSeq( dataStore,"SEQ");
         int row = table.addRow();
         table.setSelectedRow(row);

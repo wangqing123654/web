@@ -383,7 +383,7 @@ public class SYSRuleTool extends TStrike{
      * @param classifyIndex int 层数
      * @return String
      */
-    public String getNewCodeByString(String oldCode, int classifyIndex) {
+    public String getNewCodeByString( String parentID, String oldCode, int classifyIndex) {
         int length = classifyIndex <= getClassifyCurrent() ?
             getClassify(classifyIndex - 1) : getSerial();
         if (oldCode == null || oldCode.length() == 0)
@@ -392,6 +392,40 @@ public class SYSRuleTool extends TStrike{
             oldCode = oldCode.substring(oldCode.length() - length);
         return StringTool.stringADD(oldCode);
     }
+    
+	/**
+	 * 得到新的号码(可以为字母)
+	 * 
+	 * @param parentID
+	 * @param dataStore
+	 * @param classifyIndex
+	 * @return
+	 */
+	public String getNewCode(String parentID, TDataStore dataStore, int classifyIndex) {
+		int length = getClassify(classifyIndex - 1);
+		String s = StringTool.fill("0", length);
+		while (this.verify(dataStore, parentID + s)) {
+			s = StringTool.stringADD(s);
+		}
+		return s;
+	}
+
+	/**
+	 * 校验是否已存在此码
+	 * 
+	 * @param dataStore
+	 * @param categoryCode
+	 * @return
+	 */
+	private boolean verify(TDataStore dataStore, String categoryCode) {
+		int count = dataStore.rowCount();
+		for (int i = 0; i < count; i++) {
+			String value = dataStore.getItemString(i, "CATEGORY_CODE");
+			if (StringTool.compareTo(categoryCode, value) == 0)
+				return true;
+		}
+		return false;
+	}
 
     /**
      * 引用表单大分类
