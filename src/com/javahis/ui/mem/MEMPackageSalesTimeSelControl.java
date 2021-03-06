@@ -187,7 +187,9 @@ public class MEMPackageSalesTimeSelControl extends TControl {
      */
     private void initTextFormat() {
 		String sql = " SELECT ID, CHN_DESC NAME" + " FROM SYS_DICTIONARY"
-				+ " WHERE GROUP_ID = 'MEM_PACKAGE_TYPE'";
+				+ " WHERE GROUP_ID = 'MEM_PACKAGE_TYPE' "
+				//
+				+ "AND ACTIVE_FLG = 'Y' ORDER BY SEQ";
 		TParm parm = new TParm(TJDODBTool.getInstance().select(sql));
 
 		TTextFormat memCombo = (TTextFormat) getComponent("PRICE_TYPE");
