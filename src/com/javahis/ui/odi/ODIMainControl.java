@@ -10,6 +10,8 @@ import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.lang.StringUtils;
+
 import jdo.adm.ADMTool;
 import jdo.bil.BILComparator;
 import jdo.bil.BILInvoiceTool;
@@ -5036,6 +5038,19 @@ public class ODIMainControl extends TControl {
 			}
 		}
 		return parm;
+	}
+	
+	/**
+	 * 历史住院证打印
+	 */
+	public void onPrintHistory() {
+		if(StringUtils.isEmpty(this.getValueString("MR_NO"))) {
+			this.messageBox("请输入病案号");
+			return;
+		}
+		TParm parm = new TParm();
+		parm.setData("MR_NO", this.getValueString("MR_NO"));
+		this.openWindow("%ROOT%\\config\\adm\\ADMInpHistory.x", parm);
 	}
 
 }

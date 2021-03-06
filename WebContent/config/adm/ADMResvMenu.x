@@ -12,7 +12,7 @@
 #####################################################
 <Type=TMenuBar>
 UI.Item=File;Window
-UI.button=save;|;query;|;read;|;notify;|;patinfo;|;child;|;print;|;stop;|;clear;|;close
+UI.button=save;|;query;|;read;|;notify;|;patinfo;|;child;|;print;|;printHistory;|;stop;|;clear;|;close
 
 Window.Type=TMenu
 Window.Text=窗口
@@ -26,7 +26,7 @@ File.Text=文件
 File.enText=File
 File.enTip=File
 File.M=F
-File.Item=save;|;query;|;read;|;notify;|;patinfo;|;child;|;print;|;stop;|;clear;|;close
+File.Item=save;|;query;|;read;|;notify;|;patinfo;|;child;|;print;|;printHistory;|;stop;|;clear;|;close
 
 save.Type=TMenuItem
 save.Text=保存
@@ -85,6 +85,16 @@ print.M=
 print.key=
 print.Action=onPrint
 print.pic=print.gif
+
+printHistory.Type=TMenuItem
+printHistory.Text=历史住院证
+printHistory.Tip=历史住院证
+printHistory.enText=Admission Note
+printHistory.enTip=Admission Note
+printHistory.M=
+printHistory.key=
+printHistory.Action=onPrintHistory
+printHistory.pic=print.gif
 
 stop.Type=TMenuItem
 stop.Text=取消预约

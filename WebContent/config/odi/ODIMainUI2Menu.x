@@ -1,6 +1,6 @@
 <Type=TMenuBar>
 UI.Item=File;Tool;Window
-UI.button=query;|;card;bedcard;|;cln;|;emr;|;bas;|;bab;|;sel;|;twd;|;tprC;|;newtpr;|;hl;|;smz;|;res;|;opd;|;lis;|;ris;|;hos;|;ibs;|;pdf;|;export;|;clear;|;close
+UI.button=query;|;card;bedcard;|;cln;|;emr;|;bas;|;bab;|;sel;|;twd;|;tprC;|;newtpr;|;hl;|;smz;|;res;|;opd;|;lis;|;ris;|;hos;|;ibs;|;pdf;|;export;|;clear;|;printHistory;|;close
 
 Window.Type=TMenu
 Window.Text=窗口
@@ -290,3 +290,13 @@ export.Tip=导出(Ctrl+E)
 export.M=E
 export.Action=onExport
 export.pic=export.gif
+
+printHistory.Type=TMenuItem
+printHistory.Text=历史住院证
+printHistory.Tip=历史住院证
+printHistory.enText=Admission Note
+printHistory.enTip=Admission Note
+printHistory.M=
+printHistory.key=
+printHistory.Action=onPrintHistory
+printHistory.pic=print.gif

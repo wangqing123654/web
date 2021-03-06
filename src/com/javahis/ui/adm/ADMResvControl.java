@@ -245,6 +245,9 @@ public class ADMResvControl
         if (this.checkAdmInp()) {
             this.messageBox("E0121");
             this.setMenu(false);
+            //
+            callFunction("UI|print|setEnabled", false); // 住院证
+            //
             return;
         }
         parm.setData("IN_CASE_FLG","Y");
@@ -463,65 +466,10 @@ public class ADMResvControl
             setValue("RESV_NO", resvNo); //预约单号为
             this.setMenu(true);
             this.messageBox("P0005");
-            onPrint1();
+            onPrint();
         }
     }
-    
-    /**
-     * 住院证打印
-     * @param parm TParm
-     */
-    public void onPrint1() {
-        if (resvNo.length() <= 0)
-            return;
-        TParm p = new TParm();
-        p.setData("RESV_NO", resvNo);
-        TParm resvPrint = ADMResvTool.getInstance().selectFroPrint(p);
-        TParm actionParm = new TParm();
-        actionParm.setData("MR_NO", pat.getMrNo());
-        actionParm.setData("IPD_NO", pat.getIpdNo());
-        actionParm.setData("PAT_NAME", pat.getName());
-        actionParm.setData("SEX", pat.getSexString());
-        actionParm.setData("AGE", DateUtil.showAge(pat.getBirthday(), sysDate)); // 年龄
-/*        actionParm.setData("AGE", StringUtil.showAge(pat.getBirthday(), resvPrint
-        		.getTimestamp("APP_DATE", 0))); // 年龄
-*/        actionParm.setData("REMARK", resvPrint.getValue("REMARK", 0)); // 特殊事项
-        Timestamp ts = SystemTool.getInstance().getDate();
-        actionParm.setData("CASE_NO", resvNo);
-        actionParm.setData("ADM_TYPE", "O");
-        actionParm.setData("DEPT_CODE", resvPrint.getValue("DEPT_CODE", 0));
-        actionParm.setData("STATION_CODE", resvPrint.getValue("STATION_CODE", 0));
-        actionParm.setData("ADM_DATE", ts);
-        actionParm.setData("STYLETYPE", "1");
-        actionParm.setData("RULETYPE", "3");
-        actionParm.setData("SYSTEM_TYPE", "ODO");  
-        TTextFormat diseDesc = (TTextFormat) this.getComponent("DISE_CODE");// add by wanglong 20121025
-        actionParm.setData("DISE_DESC", diseDesc.getText());// add by wanglong 20121025
-        String bedNoDesc = StringUtil.getDesc("SYS_BED", "BED_NO_DESC", "BED_NO='" + BED_NO + "'");//add by duzhw 20140416
-        if(bedNoDesc.length()>0){
-        	actionParm.setData("BED_NO", bedNoDesc);//住院证上显示描述
-        }else{
-        	actionParm.setData("BED_NO", BED_NO);// add by chenxi 20130308
-        }
-        TParm emrFileData = new TParm();
-        String path = TConfig.getSystemValue("ADMEmrINHOSPPATH");
-        String fileName = TConfig.getSystemValue("ADMEmrINHOSPFILENAME");
-        String subClassCode = TConfig.getSystemValue("ADMEmrINHOSPSUBCLASSCODE");
-        String classCode = TConfig.getSystemValue("ADMEmrINHOSPCLASSCODE");
-        emrFileData.setData("TEMPLET_PATH", path);
-        emrFileData.setData("EMT_FILENAME", fileName);
-        emrFileData.setData("SUBCLASS_CODE", subClassCode);
-        emrFileData.setData("CLASS_CODE", classCode);
-        emrFileData.setData("RESV_NO", resvNo);
-        actionParm.setData("ADM_TYPE_ZYZ",adm_type_zyz);//20130820,yanj
-        actionParm.setData("EMR_FILE_DATA", emrFileData);
-        this.openWindow("%ROOT%\\config\\emr\\TEmrWordUI.x", actionParm);
-      //yanj,20130820,添加当为门急诊时打印完自动关闭该界面
-		if(adm_type_zyz.equals("O")||adm_type_zyz.equals("E")){
-			this.closeWindow();
-			return;
-		}
-    }    
+      
 
     /**
      * 修改预约信息
@@ -546,77 +494,90 @@ public class ADMResvControl
         if (!this.getValueString("DISE_CODE").trim().equals("")) {// add by wanglong 20121025
             updateADMResvSDInfo();//插入单病种信息
         }
-        onPrint1() ;
+        onPrint() ;
     }
 
     /**
      * 住院证打印
      * @param parm TParm
      */
-    public void onPrint() {
-    	String sql = "SELECT * FROM EMR_FILE_INDEX WHERE CASE_NO='"+resvNo+"' ORDER BY OPT_DATE DESC " ;
-    	TParm result1 = new TParm(TJDODBTool.getInstance().select(sql)) ;	
-    	if(result1.getErrCode() < 0){
-            this.messageBox("E0005");
-            return;    		
-    	}
-    	if(result1.getCount() < 0){
-    		this.onPrint1() ;
-    	}else{
-    		String filePath = result1.getValue("FILE_PATH",0) ;
-    		String fileName = result1.getValue("FILE_NAME",0) ;
-    		TParm p = new TParm();
-            p.setData("RESV_NO",resvNo);
-            TParm resvPrint = ADMResvTool.getInstance().selectFroPrint(p); 
-    		TParm parm = new TParm() ;
-    		parm.setData("MR_NO",pat.getMrNo()) ;
-    		parm.setData("IPD_NO", pat.getIpdNo());
-    		parm.setData("PAT_NAME",pat.getName()) ;
-    		parm.setData("SEX", pat.getSexString());
-    		parm.setData("AGE",DateUtil.showAge(pat.getBirthday(),sysDate)); //年龄
-    		System.out.println(resvPrint.getTimestamp("APP_DATE",0));
-    		
-   		/*parm.setData("AGE",StringUtil.showAge(pat.getBirthday(),
-    			resvPrint.getTimestamp("APP_DATE",0))); */
-   		parm.setData("CASE_NO",resvNo) ;
-    		Timestamp ts = SystemTool.getInstance().getDate() ;
-    		parm.setData("ADM_TYPE","O") ;
-    		parm.setData("DEPT_CODE",resvPrint.getValue("DEPT_CODE",0)) ;
-    		parm.setData("STATION_CODE",resvPrint.getValue("STATION_CODE",0)) ;
-    		parm.setData("ADM_DATE", ts);
-    		parm.setData("STYLETYPE", "1");
-    		parm.setData("RULETYPE", "3");
-    		parm.setData("SYSTEM_TYPE","ODO") ;
-    		String subClassCode = TConfig.getSystemValue("ADMEmrINHOSPSUBCLASSCODE") ;
-    		String classCode = TConfig.getSystemValue("ADMEmrINHOSPCLASSCODE") ;    		
-    		TParm emrFileData = new TParm() ;
-    		emrFileData.setData("FILE_PATH",filePath)  ;
-    		emrFileData.setData("FILE_NAME",fileName) ;
-    		emrFileData.setData("FILE_SEQ",result1.getValue("FILE_SEQ",0)) ;   		
-    		emrFileData.setData("SUBCLASS_CODE",subClassCode) ;
-    		emrFileData.setData("CLASS_CODE",classCode) ;
-    		
-    		emrFileData.setData("FLG",true) ;
-    		parm.setData("ADM_TYPE_ZYZ",adm_type_zyz);//20130820,yanj
-    		
-    		parm.setData("EMR_FILE_DATA", emrFileData);
-    		this.openWindow("%ROOT%\\config\\emr\\TEmrWordUI.x", parm);
-    		//yanj,20130820,添加当为门急诊时打印完自动关闭该界面
-    		if(adm_type_zyz.equals("O")||adm_type_zyz.equals("E")){
-    			this.closeWindow();
-    			return;
-    		}
-    	}
-    }
+	public void onPrint() {
+		if (StringUtils.isEmpty(resvNo)) {
+			this.messageBox("请先保存");
+			return;
+		}
+		this.print();
+	}
     
-//    private String convertString(String str){
-//    	int i = Integer.valueOf(str.substring(6,8))+1 ;
-//    	if(String.valueOf(i).length() == 2){
-//    		return String.valueOf(i) ;
-//    	}else{
-//    		return "0"+String.valueOf(i) ;
-//    	}
-//    }
+	/**
+	 * 打印
+	 */
+	private void print() {
+		String subClassCode = TConfig.getSystemValue("ADMEmrINHOSPSUBCLASSCODE");
+		String classCode = TConfig.getSystemValue("ADMEmrINHOSPCLASSCODE");
+		String sql = "SELECT * FROM EMR_FILE_INDEX WHERE CASE_NO='" + resvNo + "'";
+		sql += " AND CLASS_CODE='" + classCode + "' AND  SUBCLASS_CODE='" + subClassCode + "'";
+		TParm result1 = new TParm(TJDODBTool.getInstance().select(sql));
+		if (result1.getErrCode() < 0) {
+			this.messageBox("E0005");
+			return;
+		}
+		String path, fileName, seq;
+		boolean flg;// “病历是否存在”标识
+		if (result1.getCount() < 0) {
+			path = TConfig.getSystemValue("ADMEmrINHOSPPATH");
+			fileName = TConfig.getSystemValue("ADMEmrINHOSPFILENAME");
+			seq = "";
+			flg = false;
+		} else {
+			path = result1.getValue("FILE_PATH", 0);
+			fileName = result1.getValue("FILE_NAME", 0);
+			seq = result1.getValue("FILE_SEQ", 0);
+			flg = true;
+		}
+		//
+		TParm p = new TParm();
+		p.setData("RESV_NO", resvNo);
+		TParm resvPrint = ADMResvTool.getInstance().selectFroPrint(p);
+		//
+		TParm actionParm = new TParm();
+		actionParm.setData("MR_NO", pat.getMrNo());
+		actionParm.setData("IPD_NO", pat.getIpdNo());
+		actionParm.setData("PAT_NAME", pat.getName());
+		actionParm.setData("SEX", pat.getSexString());
+		actionParm.setData("AGE", DateUtil.showAge(pat.getBirthday(), sysDate)); // 年龄
+		Timestamp ts = SystemTool.getInstance().getDate();
+		actionParm.setData("CASE_NO", resvNo);
+		actionParm.setData("ADM_TYPE", "O");
+		actionParm.setData("DEPT_CODE", resvPrint.getValue("DEPT_CODE", 0));
+		actionParm.setData("STATION_CODE", resvPrint.getValue("STATION_CODE", 0));
+		actionParm.setData("ADM_DATE", ts);// 打印日期
+		actionParm.setData("STYLETYPE", "1");
+		actionParm.setData("RULETYPE", "3");
+		actionParm.setData("SYSTEM_TYPE", "ODO");
+		//
+		TParm emrFileData = new TParm();
+		emrFileData.setData("TEMPLET_PATH", path);
+		emrFileData.setData("EMT_FILENAME", fileName);
+		emrFileData.setData("FILE_PATH",path)  ;
+		emrFileData.setData("FILE_NAME",fileName) ;
+		emrFileData.setData("SUBCLASS_CODE", subClassCode);
+		emrFileData.setData("CLASS_CODE", classCode);
+		emrFileData.setData("FILE_SEQ", seq);
+		emrFileData.setData("FLG", flg);
+		//
+		actionParm.setData("EMR_FILE_DATA", emrFileData);
+		actionParm.setData("ADM_TYPE_ZYZ", adm_type_zyz);// 20130820,yanj
+		actionParm.setData("RESV_NO", resvNo);// 预约号
+		this.openWindow("%ROOT%\\config\\emr\\TEmrWordUI.x", actionParm);
+		// yanj,20130820,添加当为门急诊时打印完自动关闭该界面
+		if (adm_type_zyz.equals("O") || adm_type_zyz.equals("E")) {
+			this.closeWindow();
+			return;
+		}
+	}
+    
+
 
     /**
      * 读取界面信息
@@ -785,6 +746,9 @@ public class ADMResvControl
         setValue("APP_DATE", SystemTool.getInstance().getDate()); //预定日期
         setValue("RESV_DATE",StringTool.rollDate(SystemTool.getInstance().getDate(),1)); //预约住院日
         this.callFunction("UI|NEW_BORN_FLG|setEnabled",true);
+        //
+        callFunction("UI|print|setEnabled", true); // 住院证
+        //
     }
 
     /**
@@ -1034,4 +998,17 @@ public class ADMResvControl
         setValue("AGE", age);
         return age;
     }   */
+    
+	/**
+	 * 历史住院证打印
+	 */
+	public void onPrintHistory() {
+		if(StringUtils.isEmpty(this.getValueString("MR_NO"))) {
+			this.messageBox("请输入病案号");
+			return;
+		}
+		TParm parm = new TParm();
+		parm.setData("MR_NO", this.getValueString("MR_NO"));
+		this.openWindow("%ROOT%\\config\\adm\\ADMInpHistory.x", parm);
+	}
 }
