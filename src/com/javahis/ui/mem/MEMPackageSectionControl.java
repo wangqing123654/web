@@ -194,7 +194,9 @@ public class MEMPackageSectionControl extends TControl {
 	}
 
 	private void initCombo() {
-		String sql = " SELECT ID, CHN_DESC NAME" + " FROM SYS_DICTIONARY" + " WHERE GROUP_ID = 'MEM_PACKAGE_TYPE'";
+		String sql = " SELECT ID, CHN_DESC NAME" + " FROM SYS_DICTIONARY" + " WHERE GROUP_ID = 'MEM_PACKAGE_TYPE'"
+				// 
+				+ " AND ACTIVE_FLG = 'Y' ORDER BY SEQ";
 		TParm parm = new TParm(TJDODBTool.getInstance().select(sql));
 
 		TTextFormat memCombo = (TTextFormat) getComponent("PRICE_TYPE");
@@ -2359,4 +2361,39 @@ public class MEMPackageSectionControl extends TControl {
 		}
 		this.messageBox("此套餐的折扣率为:" + result.getValue("RATE"));
 	}
+	
+	/**
+	 * 计算所有套餐折扣
+	 */
+	public void onFeeRateMul() {
+		table.acceptText();
+		TParm tableParm = table.getParmValue();
+		String sectionCode = "";
+		for (int i = 0; i < tableParm.getCount(); i++) {
+			sectionCode += "'" + tableParm.getValue("SECTION_CODE", i) + "',";
+		}
+		sectionCode = sectionCode.substring(0, sectionCode.lastIndexOf(","));
+		//
+		String sql = " SELECT ID, CHN_DESC NAME" + " FROM SYS_DICTIONARY" + " WHERE GROUP_ID = 'MEM_PACKAGE_TYPE'"
+		//
+				+ " AND ACTIVE_FLG = 'Y' ORDER BY SEQ";
+		//
+		TParm parm = new TParm(TJDODBTool.getInstance().select(sql));
+		//
+		TParm result;
+		String message = "";
+		for (int i = 0; i < parm.getCount(); i++) {
+			result = BILLumpWorkTool.getInstance().onLumpWorkRateFee(this.getValueString("PACKAGE_CODE"),
+					parm.getValue("ID", i), sectionCode);
+			if (result.getErrCode() < 0) {
+				this.messageBox(result.getErrText());
+				return;
+			}
+			message += (parm.getValue("NAME", i) + "：" + result.getValue("RATE") + "\n\r");
+		}
+		//
+		this.messageBox(message);
+	}
+	
+
 }

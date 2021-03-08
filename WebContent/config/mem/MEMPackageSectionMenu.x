@@ -9,7 +9,7 @@
  # @version 1.0
 <Type=TMenuBar>
 UI.Item=File;Window
-UI.button=save;|;delete;|;query;|;detailquery;|;onFeeRate;|;clear;|;close
+UI.button=save;|;delete;|;query;|;detailquery;|;onFeeRate;|;onFeeRateMul;|;clear;|;close
 
 Window.Type=TMenu
 Window.Text=窗口
@@ -44,6 +44,14 @@ onFeeRate.M=N
 onFeeRate.key=rate
 onFeeRate.Action=onFeeRate
 onFeeRate.pic=026.gif
+
+onFeeRateMul.Type=TMenuItem
+onFeeRateMul.Text=计算所有折扣
+onFeeRateMul.Tip=计算折扣(Rate)
+onFeeRateMul.M=N
+onFeeRateMul.key=rate
+onFeeRateMul.Action=onFeeRateMul
+onFeeRateMul.pic=026.gif
 
 query.Type=TMenuItem
 query.Text=查询
