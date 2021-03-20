@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.sql.Timestamp;
 import java.util.Vector;
 
@@ -28,8 +29,10 @@ import jdo.sys.SystemTool;
 import com.dongyang.config.TConfig;
 import com.dongyang.control.TControl;
 import com.dongyang.data.TParm;
+import com.dongyang.data.TSocket;
 import com.dongyang.jdo.TJDODBTool;
 import com.dongyang.manager.TIOM_Database;
+import com.dongyang.manager.TIOM_FileServer;
 import com.dongyang.ui.TCheckBox;
 import com.dongyang.ui.TMenuItem;
 import com.dongyang.ui.TPanel;
@@ -961,8 +964,41 @@ public class ODIMainControl extends TControl {
 			}
 		}
 		// 临床路径验证end
-
+		
+		//
+		this.openPDF(parm);
+        //
 		this.initOtherUi();
+	}
+	
+	/**
+	 * 打开流调PDF
+	 */
+	public void openPDF(TParm row) {
+		// 下载流调PDF
+		TSocket s = new TSocket(TConfig.getSystemValue("FileServer.Main.IP"), TSocket.FILE_SERVER_PORT);
+		String idNo = row.getValue("IDNO");
+		if (StringUtil.isNullString(idNo)) {
+			return;
+		}
+		String src = TConfig.getSystemValue("FileServer.Main.Root") + "\\流调结果\\" + idNo + "\\" + idNo + ".pdf";
+		File srcFile = new File(src);
+		if (!srcFile.exists()) {
+			return;
+		}
+		String target = "C:\\JavaHis\\temp\\" + idNo + ".pdf";
+		File f = new File("C:\\JavaHis\\temp");
+		if (!f.exists()) {
+			TIOM_FileServer.mkdir("C:\\JavaHis\\temp");
+		}
+		TIOM_FileServer.readFileToLocal(s, src, target);
+		// 打开PDF
+		Runtime runtime = Runtime.getRuntime();
+		try {
+			runtime.exec("rundll32 url.dll FileProtocolHandler " + target); // 打开文件
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public void initOtherUi() {

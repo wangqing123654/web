@@ -22,23 +22,11 @@
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
-	
-	<!--注意！！！！！！ 该文件适用于43服务器（门急诊相关）-->
+
 	<jaxws:endpoint 
-	    id="opePdaWsTool" 
-	    implementor="jdo.ope.OPEPdaWsToolImpl" 
-	    address="/OPEPdaWs" >	    
-	</jaxws:endpoint>
-	<jaxws:endpoint 
-	    id="phaDosageWsImpl" 
-	    implementor="jdo.pha.inf.PHADosageWsImpl" 
-	    address="/phaDosageWsImpl" >	    
-	</jaxws:endpoint>
-	
-	<jaxws:endpoint 
-		id="spcOpdOrderSynchWsTool" 
-		implementor="jdo.spc.SPCOpdOrderSynchWsToolImpl" 
-		address="/SPCOpdOrderSynchWs" >	    
+	    id="WeChatTool" 
+	    implementor="jdo.ope.WeChatToolImpl" 
+	    address="/WeChatToolImpl" >	    
 	</jaxws:endpoint>
 	
     <aop:aspectj-autoproxy />
