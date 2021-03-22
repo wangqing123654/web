@@ -3143,9 +3143,12 @@ public class TEmrWordControl extends TControl implements DMessageIO {
 		}
 		// 查询预约相关的值的视图;
 		TParm admRsvParm = new TParm();
-		if (!StringUtils.isEmpty(this.getResvNo())) {
+		if (!StringUtils.isEmpty(this.getResvNo())) {// 打印住院证走这里
 			admRsvParm = new TParm(
 					this.getDBTool().select("SELECT * FROM ADM_RESV_VIEW WHERE RESV_NO='" + this.getResvNo() + "'"));
+		}else {// 
+			admRsvParm = new TParm(
+					this.getDBTool().select("SELECT * FROM ADM_RESV_VIEW WHERE RESV_NO='" + this.getCaseNo() + "'"));
 		}
 		if (admRsvParm.getCount() > 0) {
 			for (String parmName : admRsvParm.getNames()) {
