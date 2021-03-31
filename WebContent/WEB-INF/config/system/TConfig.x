@@ -222,3 +222,6 @@ LockPatTime =3
 
 //复诊病历记录
 OEEmrMRCODE=EMR02000166
+
+// 药事服务费医嘱代码
+PHA_SERVICE_FEE=ZAZ01142

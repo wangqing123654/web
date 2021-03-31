@@ -670,6 +670,14 @@ public class OPBChargesMControl extends TControl {
 			}
 			// reg得到的数据放入界面
 			afterRegSetValue();
+			// 插入药事服务费
+			try {
+				EKTpreDebtTool.getInstance().insertPhaServiceFee(caseNo, Operator.getRegion(), Operator.getID(),
+						Operator.getIP());
+				System.out.println("插入药事服务费成功");
+			} catch (Exception e) {
+
+			}
 			// 通过reg和caseNo得到pat
 			opb = OPB.onQueryByCaseNo(reg);
 			serviceLevel = opb.getReg().getServiceLevel();
@@ -1075,6 +1083,14 @@ public class OPBChargesMControl extends TControl {
 		}
 		// reg得到的数据放入界面
 		afterRegSetValue();
+		// 插入药事服务费
+		try {
+			EKTpreDebtTool.getInstance().insertPhaServiceFee(caseNo, Operator.getRegion(), Operator.getID(),
+					Operator.getIP());
+			System.out.println("插入药事服务费成功");
+		} catch (Exception e) {
+
+		}
 		// 通过reg和caseNo得到pat
 		opb = OPB.onQueryByCaseNo(reg);
 		serviceLevel = opb.getReg().getServiceLevel();

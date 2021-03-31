@@ -13,6 +13,7 @@ import jdo.sys.SYSFeeTool;
 import jdo.sys.SysFee;
 import jdo.sys.SystemTool;
 
+import com.dongyang.config.TConfig;
 import com.dongyang.data.TParm;
 import com.dongyang.db.TConnection;
 import com.dongyang.jdo.TJDODBTool;
@@ -723,5 +724,88 @@ public class EKTpreDebtTool extends TJDODBTool {
 			result = "医疗费:"+StringTool.round(opbAmt.doubleValue(),2)+" 预交金余额:"+StringTool.round(master,2) + " 预交金不足";
 		}
 		return result;
+	}
+	
+	/**
+	 * 门、急诊收费界面插入药事服务费
+	 * 
+	 * @param caseNo
+	 * @param regionCode
+	 * @param optUser
+	 * @param optTerm
+	 * @return
+	 */
+	public TParm insertPhaServiceFee(String caseNo, String regionCode, String optUser, String optTerm) {
+		// 查询挂号数据
+		TParm oneParm = new TParm();
+		oneParm.setData("CASE_NO", caseNo);
+		TParm regParm = PatAdmTool.getInstance().selectdata(oneParm);
+		regParm = regParm.getRow(0);
+		// 删除未计费的药事服务费医嘱
+		String orderCode = TConfig.getSystemValue("PHA_SERVICE_FEE");
+		String sql = "DELETE FROM OPD_ORDER WHERE CASE_NO = '" + caseNo + "' AND ORDER_CODE ='" + orderCode
+				+ "' AND BILL_FLG='N'";
+		TParm result = new TParm(TJDODBTool.getInstance().update(sql));
+		// 插入一笔药事服务费
+		TParm sysFeeParm = SYSFeeTool.getInstance().getFeeAllData(orderCode);
+		sysFeeParm = sysFeeParm.getRow(0);
+		String hexpCode = sysFeeParm.getValue("CHARGE_HOSP_CODE");
+		sql = "SELECT OPD_CHARGE_CODE FROM SYS_CHARGE_HOSP WHERE CHARGE_HOSP_CODE = '" + hexpCode + "'";
+		TParm rexpParm = new TParm(TJDODBTool.getInstance().select(sql));
+		String rexpCode = rexpParm.getValue("OPD_CHARGE_CODE", 0);
+		// 成本中心
+		sql = " SELECT COST_CENTER_CODE" + " FROM SYS_DEPT" + " WHERE DEPT_CODE = '" + regParm.getValue("REALDEPT_CODE")
+				+ "'";
+		TParm costCenterParm = new TParm(TJDODBTool.getInstance().select(sql));
+		String costCenterCode = costCenterParm.getValue("COST_CENTER_CODE", 0);
+		// 查询药事服务费最大序号
+		sql = " SELECT MAX(SEQ_NO) AS SEQ FROM OPD_ORDER WHERE CASE_NO = '" + caseNo + "' AND ORDER_CODE = '"
+				+ orderCode + "' AND BILL_FLG ='Y'";
+		costCenterParm = new TParm(TJDODBTool.getInstance().select(sql));
+		int seq = costCenterParm.getInt("SEQ", 0) + 1;
+		// 查询未收费的所有药品应收总金额
+		sql = "SELECT SUM(AR_AMT) AS AR_AMT FROM OPD_ORDER WHERE CASE_NO ='" + caseNo
+				+ "' AND CAT1_TYPE='PHA' AND BILL_FLG ='N'";
+		result = new TParm(TJDODBTool.getInstance().select(sql));
+		double ownPrice = 0.0;// 自费价
+		if (result.getDouble("AR_AMT", 0) < 20) {
+			return null;
+		} else if (result.getDouble("AR_AMT", 0) >= 20 && result.getDouble("AR_AMT", 0) < 100) {
+			ownPrice = 20.0;
+		} else {
+			ownPrice = 100.0;
+		}
+		double ownAmt = ownPrice;// 应收金额
+		double arAmt = ownPrice;// 实收金额
+		sql = " INSERT INTO OPD_ORDER" + " (CASE_NO, RX_NO, SEQ_NO, PRESRT_NO, REGION_CODE, "
+				+ " MR_NO, ADM_TYPE, RX_TYPE, TEMPORARY_FLG, RELEASE_FLG, "
+				+ " LINKMAIN_FLG, ORDER_CODE, ORDER_DESC, ORDER_CAT1_CODE, MEDI_QTY, "
+				+ " MEDI_UNIT, TAKE_DAYS, DOSAGE_QTY, DOSAGE_UNIT, DISPENSE_QTY, "
+				+ " DISPENSE_UNIT, GIVEBOX_FLG, OWN_PRICE, NHI_PRICE, DISCOUNT_RATE, "
+				+ " OWN_AMT, AR_AMT, DR_CODE, ORDER_DATE, DEPT_CODE, "
+				+ " EXEC_DEPT_CODE, SETMAIN_FLG, ORDERSET_GROUP_NO, ORDERSET_CODE, HIDE_FLG, "
+				+ " FILE_NO, URGENT_FLG, INSPAY_TYPE, PHA_TYPE, DOSE_TYPE, "
+				+ " EXPENSIVE_FLG, PRINTTYPEFLG_INFANT, PRESCRIPT_NO, ATC_FLG, BILL_FLG, "
+				+ " PRINT_FLG, REXP_CODE, HEXP_CODE, CTZ1_CODE, DCT_TAKE_QTY, "
+				+ " PACKAGE_TOT, DCTAGENT_FLG, OPT_USER, OPT_DATE, OPT_TERM, "
+				+ " MED_APPLY_NO, CAT1_TYPE, COUNTER_NO, EXEC_FLG, RECEIPT_FLG, "
+				+ " BILL_TYPE, FINAL_TYPE, COST_AMT, COST_CENTER_CODE, BATCH_SEQ1, "
+				+ " VERIFYIN_PRICE1, DISPENSE_QTY1, BATCH_SEQ2, VERIFYIN_PRICE2, DISPENSE_QTY2, "
+				+ " BATCH_SEQ3, VERIFYIN_PRICE3, DISPENSE_QTY3, EXEC_DR_CODE, EXEC_DATE,UPDATE_TIME)" + " VALUES"
+				+ " ('" + caseNo + "', 'PHA_SERVICE_FEE', " + seq + ", '', '" + regionCode + "', " + " '"
+				+ regParm.getValue("MR_NO") + "', '" + regParm.getValue("ADM_TYPE") + "', '9', 'N', 'N', " + " 'N', '"
+				+ orderCode + "', '" + sysFeeParm.getValue("ORDER_DESC") + "', '"
+				+ sysFeeParm.getValue("ORDER_CAT1_CODE") + "', 1, " + " '', 1, 1, '', 1, " + " '', '', " + ownPrice
+				+ ", " + 0 + ", " + 1 + ", " + " " + ownAmt + ", " + arAmt + ", '" + regParm.getValue("REALDR_CODE")
+				+ "', SYSDATE, '" + regParm.getValue("REALDEPT_CODE") + "', " + " '" + regParm.getValue("REALDEPT_CODE")
+				+ "', 'N', '', '', 'N', " + " '', 'N', 'C', 'W', 'O', " + " 'N', 'N', 0, 'N', 'N', " + " 'N', '"
+				+ rexpCode + "', '" + hexpCode + "', '" + regParm.getValue("CTZ1_CODE") + "', 0, " + " 0, 'N', '"
+				+ optUser + "', SYSDATE, '" + optTerm + "', " + " '', '" + sysFeeParm.getValue("CAT1_TYPE")
+				+ "', 0, 'Y', 'N', " + " 'C', 'F', 0, '" + costCenterCode + "', 0, " + " 0, 0, 0, 0, 0, "
+				+ " 0, 0, 0, '" + optUser + "', SYSDATE,'" + SystemTool.getInstance().getUpdateTime() + "')";
+
+		TParm result1 = new TParm(TJDODBTool.getInstance().update(sql));
+		return result1;
+
 	}
 }

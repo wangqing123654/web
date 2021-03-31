@@ -897,7 +897,7 @@ public class OdoCaseSheetControl extends TControl {
 					westParm.addData("BB", "    " + "用法：每次"
 							+ westResult.getData("HH", i)+"  "+westResult.getData("FF", i) + "  "
 							+ westResult.getData("DD", i)+"  "+westResult.getData("DR", i)
-							+ "  "+westResult.getData("GG", i) + "天数:"+westResult.getData("TAKE_DAYS", i)+"天");//huangjw 添加“自备药”标识 20160530
+							+ "  "+westResult.getData("GG", i) + "天数:"+westResult.getData("TAKE_DAYS", i)+"天"+"  "+"应付金额:"+westResult.getData("AR", i));//huangjw 添加“自备药”标识 20160530
 					//去掉医师备注 modify by huangjw 20141222//加上医师备注 modify by huangjw 20150320
 					/*westParm.addData("BB", "    " + "用法：每次"
 							+ westResult.getData("HH", i)+"  "+westResult.getData("FF", i) + "  "+ westResult.getData("DD", i));*/
@@ -910,7 +910,7 @@ public class OdoCaseSheetControl extends TControl {
 					westParm.addData("BB", "    " + "用法：每次"
 							+ westResult.getData("HH", i)+"  "+westResult.getData("FF", i) + "  "
 							+ westResult.getData("DD", i)+"  "+westResult.getData("DR", i)
-							+ "  "+westResult.getData("GG", i));//huangjw 添加“自备药”标识 20160530
+							+ "  "+westResult.getData("GG", i) + "天数:"+westResult.getData("TAKE_DAYS", i)+"天"+"  "+"应付金额:"+westResult.getData("AR", i));//huangjw 添加“自备药”标识 20160530
 					//去掉医师备注 modify by huangjw 20141222//加上医师备注 modify by huangjw 20150320
 					/*westParm.addData("BB", "    " + "用法：每次"
 							+ westResult.getData("HH", i)+"  "+westResult.getData("FF", i) + "  "+ westResult.getData("DD", i));*/
