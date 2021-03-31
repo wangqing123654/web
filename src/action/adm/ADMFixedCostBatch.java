@@ -134,4 +134,24 @@ public class ADMFixedCostBatch extends Patch {
         }
         return true;
     }
+    
+	/**
+	 * 住院药事服务费
+	 * 
+	 * @param parm
+	 * @return
+	 */
+	public TParm phaServiceFee(TParm parm) {
+		TConnection conn = TDBPoolManager.getInstance().getConnection();
+		TParm result = new TParm();
+		try {
+			result = ADMAutoBillTool.getInstance().phaServiceFee(parm, conn);
+			conn.commit();
+		} catch (Exception e) {
+			conn.rollback();
+		} finally {
+			conn.close();
+		}
+		return result;
+	}
 }

@@ -226,6 +226,13 @@ public class ADMInInpControl extends TControl {
             this.messageBox("E0005");
         }else {
             this.messageBox("P0005");
+			// 插入药事服务费
+			try {
+				TIOM_AppServer.executeAction("action.adm.ADMFixedCostBatch", "phaServiceFee", parm);
+			} catch (Exception e) {
+
+			}
+            //
             /*********************** HL7 *******************************/
             sendHL7Mes(parm, "ADM_OUT");
             this.closeWindow();

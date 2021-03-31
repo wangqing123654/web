@@ -1,10 +1,12 @@
 package jdo.adm;
 
+import com.dongyang.config.TConfig;
 import com.dongyang.data.TParm;
 import com.dongyang.jdo.TJDOTool;
 import java.sql.Timestamp;
 import jdo.sys.SYSBedTool;
 import com.dongyang.db.TConnection;
+import com.dongyang.db.TDBPoolManager;
 import com.dongyang.util.StringTool;
 import jdo.ibs.IBSTool;
 import jdo.sys.SYSBedFeeTool;
@@ -934,4 +936,146 @@ public class ADMAutoBillTool
         TParm result = new TParm(TJDODBTool.getInstance().select(SYSSQL.getSYSFee(orderCode)));
         return result.getRow(0);
     }
+    
+	/**
+	 * 住院药事服务费
+	 * 
+	 * @param parm
+	 * @param conn
+	 * @return
+	 */
+	public TParm phaServiceFee(TParm parm, TConnection conn) {
+//      System.out.println("自动计费入参："+parm);
+		String CASE_NO = parm.getValue("CASE_NO");
+		String OPT_USER = parm.getValue("OPT_USER");
+		String OPT_TERM = parm.getValue("OPT_TERM");
+		Timestamp now = SystemTool.getInstance().getDate();
+		//
+
+		String sql = "SELECT\r\n" + "	COUNT( ORDER_DATE ) AS COUNT \r\n" + "FROM\r\n"
+				+ "	( SELECT DISTINCT TO_CHAR( ORDER_DATE, 'YYYY-MM-DD' ) ORDER_DATE FROM ODI_ORDER WHERE CASE_NO = '"
+				+ CASE_NO + "' AND CAT1_TYPE = 'PHA' ORDER BY ORDER_DATE DESC )";
+		TParm ttt = new TParm(TJDODBTool.getInstance().select(sql));
+		int qty = ttt.getInt("COUNT", 0);
+		//
+		TParm result = new TParm();
+		// 查询ADM_INP病患住院信息
+		TParm inp = new TParm();
+		inp.setData("CASE_NO", CASE_NO);
+		TParm admInp = ADMInpTool.getInstance().selectall(inp);
+		if (admInp.getErrCode() < 0) {
+			err("ERR:" + admInp.getErrCode() + admInp.getErrText() + admInp.getErrName());
+			return admInp;
+		}
+		if (admInp.getCount() <= 0) {
+			admInp.setErr(-1, "查无该病患住院信息");
+			return admInp;
+		}
+		// ===zhangp 20120828 start 生成ibs_ordd时执行科室为成本中心代码
+		String cccsql = " SELECT COST_CENTER_CODE" + " FROM SYS_DEPT" + " WHERE DEPT_CODE = '"
+				+ admInp.getValue("DEPT_CODE", 0) + "'";
+		TParm cccParm = new TParm(TJDODBTool.getInstance().select(cccsql));
+		if (cccParm.getErrCode() < 0) {
+			err("ERR:" + cccParm.getErrCode() + cccParm.getErrText() + cccParm.getErrName());
+			String stsql = " SELECT COST_CENTER_CODE" + " FROM SYS_STATION" + " WHERE STATION_CODE = '"
+					+ admInp.getValue("STATION_CODE", 0) + "'";
+			TParm stParm = new TParm(TJDODBTool.getInstance().select(stsql));
+			if (stParm.getErrCode() < 0) {
+				err("ERR:" + stParm.getErrCode() + stParm.getErrText() + stParm.getErrName());
+				stParm.addData("COST_CENTER_CODE", "");
+			}
+			if (stParm.getCount() < 0) {
+				stParm.addData("COST_CENTER_CODE", "");
+			}
+			cccParm.addData("COST_CENTER_CODE", stParm.getValue("COST_CENTER_CODE", 0));// 防dept_code空
+		}
+		if (cccParm.getCount() <= 0) {
+			String stsql = " SELECT COST_CENTER_CODE" + " FROM SYS_STATION" + " WHERE STATION_CODE = '"
+					+ admInp.getValue("STATION_CODE", 0) + "'";
+			TParm stParm = new TParm(TJDODBTool.getInstance().select(stsql));
+			if (stParm.getErrCode() < 0) {
+				err("ERR:" + stParm.getErrCode() + stParm.getErrText() + stParm.getErrName());
+				stParm.addData("COST_CENTER_CODE", "");
+			}
+			if (stParm.getCount() < 0) {
+				stParm.addData("COST_CENTER_CODE", "");
+			}
+			cccParm.addData("COST_CENTER_CODE", stParm.getValue("COST_CENTER_CODE", 0));// 防dept_code空
+		}
+		// ====zhangp 20130819 start
+		String stsql = " SELECT COST_CENTER_CODE" + " FROM SYS_STATION" + " WHERE STATION_CODE = '"
+				+ admInp.getValue("STATION_CODE", 0) + "'";
+		TParm stParm = new TParm(TJDODBTool.getInstance().select(stsql));
+		if (stParm.getErrCode() < 0) {
+			err("ERR:" + stParm.getErrCode() + stParm.getErrText() + stParm.getErrName());
+			stParm.addData("COST_CENTER_CODE", "");
+		}
+		if (stParm.getCount() < 0) {
+			stParm.addData("COST_CENTER_CODE", "");
+		}
+
+		// 生成IBS参数
+		TParm orderList = new TParm();
+		String orderCode = TConfig.getSystemValue("PHA_SERVICE_FEE");
+		TParm sysFee = this.getSysFee(orderCode);
+		orderList.addData("CASE_NO", CASE_NO);
+		// 数量
+		orderList.addData("DOSAGE_QTY", 1);
+		orderList.addData("DOSAGE_UNIT", sysFee.getValue("UNIT_CODE"));
+		orderList.addData("ORDER_CODE", orderCode);
+		orderList.addData("IPD_NO", admInp.getValue("IPD_NO", 0));
+		orderList.addData("MR_NO", admInp.getValue("MR_NO", 0));
+		orderList.addData("DEPT_CODE", admInp.getValue("DEPT_CODE", 0));
+		orderList.addData("ORDER_DEPT_CODE", admInp.getValue("DEPT_CODE", 0));
+		orderList.addData("STATION_CODE", admInp.getValue("STATION_CODE", 0));
+		// ===zhangp 20120828 start 生成ibs_ordd时执行科室为成本中心代码
+//         orderList.addData("EXEC_DEPT_CODE", admInp.getValue("DEPT_CODE", 0));
+		// =====zhangp 20130819 start
+		orderList.addData("EXEC_DEPT_CODE", cccParm.getValue("COST_CENTER_CODE", 0));
+		// =====zhangp 20130819 end
+		// ===zhangp 20120828 end
+		orderList.addData("EXEC_STATION_CODE", admInp.getValue("STATION_CODE", 0));
+		orderList.addData("BED_NO", admInp.getValue("BED_NO", 0));
+		orderList.addData("DISPENSE_EFF_DATE", now);
+		orderList.addData("DISPENSE_END_DATE", now);
+		orderList.addData("MEDI_QTY", qty); // 开药数量默认为0
+		orderList.addData("MEDI_UNIT", sysFee.getValue("UNIT_CODE"));
+		orderList.addData("TAKE_DAYS", 1); // 开药天数默认为0
+		orderList.addData("OPT_USER", OPT_USER);
+		orderList.addData("OPT_TERM", OPT_TERM);
+		orderList.addData("ORDER_CAT1_CODE", sysFee.getValue("ORDER_CAT1_CODE"));
+		orderList.addData("CAT1_TYPE", sysFee.getValue("CAT1_TYPE"));
+		orderList.addData("HIDE_FLG", "N");// 集合医嘱细项隐藏标记
+		orderList.addData("ORDER_DR_CODE", admInp.getValue("VS_DR_CODE", 0));
+		orderList.addData("BILL_FLG", "Y");
+		orderList.addData("REQUEST_FLG", "N");// 请领注记
+		orderList.addData("ORDERSET_GROUP_NO", "");// 集合医嘱组号
+		orderList.addData("ORDERSET_CODE", "");
+		//
+		TParm ibsParm = new TParm();
+		ibsParm.setData("M", orderList.getData());
+		ibsParm.setData("CTZ1_CODE", admInp.getValue("CTZ1_CODE", 0));
+		ibsParm.setData("CTZ2_CODE", admInp.getValue("CTZ2_CODE", 0));
+		ibsParm.setData("CTZ3_CODE", admInp.getValue("CTZ3_CODE", 0));
+		ibsParm.setData("FLG", "ADD");
+//      System.out.println("ibsParm:"+ibsParm);
+		// 取回用于插入的IBS参数
+		TParm IBSInsert = IBSTool.getInstance().getIBSOrderData(ibsParm);
+		// 修改应付金额
+		IBSInsert.setData("OWN_RATE", 0, 1);
+		IBSInsert.setData("OWN_AMT", 0, sysFee.getDouble("OWN_PRICE") * qty);
+		IBSInsert.setData("TOT_AMT", 0, sysFee.getDouble("OWN_PRICE") * qty);
+		//
+		TParm ibsIN = new TParm();
+		ibsIN.setData("M", IBSInsert.getData());
+		ibsIN.setData("DATA_TYPE", "0");
+		ibsIN.setData("FLG", "ADD");
+		ibsIN.setData("BILL_DATE", now);
+		result = IBSTool.getInstance().insertIBSOrder(ibsIN, conn);
+		if (result.getErrCode() < 0) {
+			err("ERR:" + result.getErrCode() + result.getErrText() + result.getErrName());
+			return result;
+		}
+		return result;
+	}
 }
