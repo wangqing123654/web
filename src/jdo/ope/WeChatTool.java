@@ -1,5 +1,8 @@
 package jdo.ope;
 
+import javax.jws.WebService;
+
+@WebService
 public interface WeChatTool {
 
 	/**

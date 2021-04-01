@@ -7509,9 +7509,15 @@ public class REGPatAdmControl extends TControl {
 	 */
 	private void checkCtz1Code() {
 		String ctz1Code = this.getValueString("CTZ1_CODE");
+		if (ctz1Code == null || ctz1Code.length() == 0) {
+			return;
+		}
 		String sql = "SELECT CTZ_CODE, CTZ_DESC, USE_FLG FROM SYS_CTZ WHERE CTZ_CODE = '" + ctz1Code + "'";
 		TParm parm = new TParm(TJDODBTool.getInstance().select(sql));
-		if (!parm.getBoolean("USE_FLG", 0)) {
+		if (parm.getCount("CTZ_CODE") == 0) {
+			return;
+		}
+		if (parm.getCount("CTZ_CODE") == 0 || !parm.getBoolean("USE_FLG", 0)) {
 			String ctzDesc = parm.getValue("CTZ_DESC", 0);
 			this.messageBox("该患者原身份【" + ctzDesc + "】已停用，请在【患者注册页面】重新设定");
 			this.setValue("CTZ1_CODE", "");

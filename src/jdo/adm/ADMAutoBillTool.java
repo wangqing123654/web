@@ -952,11 +952,22 @@ public class ADMAutoBillTool
 		Timestamp now = SystemTool.getInstance().getDate();
 		//
 
-		String sql = "SELECT\r\n" + "	COUNT( ORDER_DATE ) AS COUNT \r\n" + "FROM\r\n"
-				+ "	( SELECT DISTINCT TO_CHAR( ORDER_DATE, 'YYYY-MM-DD' ) ORDER_DATE FROM ODI_ORDER WHERE CASE_NO = '"
-				+ CASE_NO + "' AND CAT1_TYPE = 'PHA' ORDER BY ORDER_DATE DESC )";
+		String sql = "SELECT\r\n" + 
+				"	TO_CHAR( BILL_DATE, 'YYYY-MM-DD' ) DAY,\r\n" + 
+				"	SUM( TOT_AMT ) TOT_AMT \r\n" + 
+				"FROM\r\n" + 
+				"	IBS_ORDD \r\n" + 
+				"WHERE\r\n" + 
+				"	CASE_NO = '@' \r\n" + 
+				"	AND CAT1_TYPE = 'PHA' \r\n" + 
+				"	AND INCLUDE_FLG = 'Y' \r\n" + 
+				"GROUP BY\r\n" + 
+				"	TO_CHAR( BILL_DATE, 'YYYY-MM-DD' ) \r\n" + 
+				"ORDER BY\r\n" + 
+				"	TO_CHAR( BILL_DATE, 'YYYY-MM-DD' ) DESC";
+		sql = sql.replace("@", CASE_NO);
 		TParm ttt = new TParm(TJDODBTool.getInstance().select(sql));
-		int qty = ttt.getInt("COUNT", 0);
+		int qty = ttt.getCount("TOT_AMT");
 		//
 		TParm result = new TParm();
 		// 查询ADM_INP病患住院信息

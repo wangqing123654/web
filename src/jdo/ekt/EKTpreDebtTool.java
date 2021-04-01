@@ -748,6 +748,10 @@ public class EKTpreDebtTool extends TJDODBTool {
 		TParm result = new TParm(TJDODBTool.getInstance().update(sql));
 		// 插入一笔药事服务费
 		TParm sysFeeParm = SYSFeeTool.getInstance().getFeeAllData(orderCode);
+		if(sysFeeParm.getCount("CHARGE_HOSP_CODE")==0) {
+			System.out.println("======沒有药事服务费医嘱======");
+			return null;
+		}
 		sysFeeParm = sysFeeParm.getRow(0);
 		String hexpCode = sysFeeParm.getValue("CHARGE_HOSP_CODE");
 		sql = "SELECT OPD_CHARGE_CODE FROM SYS_CHARGE_HOSP WHERE CHARGE_HOSP_CODE = '" + hexpCode + "'";
@@ -765,16 +769,18 @@ public class EKTpreDebtTool extends TJDODBTool {
 		int seq = costCenterParm.getInt("SEQ", 0) + 1;
 		// 查询未收费的所有药品应收总金额
 		sql = "SELECT SUM(AR_AMT) AS AR_AMT FROM OPD_ORDER WHERE CASE_NO ='" + caseNo
-				+ "' AND CAT1_TYPE='PHA' AND BILL_FLG ='N'";
+				+ "' AND CAT1_TYPE='PHA' AND BILL_FLG ='N' AND MEM_PACKAGE_FLG = 'N'";// 套外
 		result = new TParm(TJDODBTool.getInstance().select(sql));
 		double ownPrice = 0.0;// 自费价
-		if (result.getDouble("AR_AMT", 0) < 20) {
+		if (result.getDouble("AR_AMT", 0) == 0) {
+			System.out.println("未计费的药品总金额为0,不收药事服务费");
 			return null;
-		} else if (result.getDouble("AR_AMT", 0) >= 20 && result.getDouble("AR_AMT", 0) < 100) {
+		} else if (result.getDouble("AR_AMT", 0) > 0 && result.getDouble("AR_AMT", 0) <= 100) {
 			ownPrice = 20.0;
 		} else {
 			ownPrice = 100.0;
 		}
+		System.out.println("=======收药事服务费"+ownPrice);
 		double ownAmt = ownPrice;// 应收金额
 		double arAmt = ownPrice;// 实收金额
 		sql = " INSERT INTO OPD_ORDER" + " (CASE_NO, RX_NO, SEQ_NO, PRESRT_NO, REGION_CODE, "
@@ -805,6 +811,10 @@ public class EKTpreDebtTool extends TJDODBTool {
 				+ " 0, 0, 0, '" + optUser + "', SYSDATE,'" + SystemTool.getInstance().getUpdateTime() + "')";
 
 		TParm result1 = new TParm(TJDODBTool.getInstance().update(sql));
+		System.out.println("門、急診药事服务费sql：：："+sql);
+		if (result1.getErrCode() < 0) {
+			System.out.println("药事服务费插入失败");
+		}
 		return result1;
 
 	}

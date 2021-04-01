@@ -3142,14 +3142,31 @@ public class TEmrWordControl extends TControl implements DMessageIO {
 			}
 		}
 		// 查询预约相关的值的视图;
-		TParm admRsvParm = new TParm();
-		if (!StringUtils.isEmpty(this.getResvNo())) {// 打印住院证走这里
-			admRsvParm = new TParm(
-					this.getDBTool().select("SELECT * FROM ADM_RESV_VIEW WHERE RESV_NO='" + this.getResvNo() + "'"));
-		}else {// 
-			admRsvParm = new TParm(
-					this.getDBTool().select("SELECT * FROM ADM_RESV_VIEW WHERE RESV_NO='" + this.getCaseNo() + "'"));
-		}
+//		TParm admRsvParm = new TParm();
+//		if (!StringUtils.isEmpty(this.getResvNo())) {// 打印住院证走这里
+//			admRsvParm = new TParm(
+//					this.getDBTool().select("SELECT * FROM ADM_RESV_VIEW WHERE RESV_NO='" + this.getResvNo() + "'"));
+//		}else {// 
+//			admRsvParm = new TParm(
+//					this.getDBTool().select("SELECT * FROM ADM_RESV_VIEW WHERE RESV_NO='" + this.getCaseNo() + "'"));
+//		}
+		// 查询预约相关的值的视图;
+				TParm admRsvParm = new TParm();
+				// add caoy 判断住院医生站
+				if (!"Y".equals(this.getResvFlg())) {
+					admRsvParm = new TParm(
+							this.getDBTool().select("SELECT * FROM ADM_RESV_VIEW WHERE RESV_NO='" + this.getCaseNo() // =====
+																														// chenxi
+																														// modify
+									+ "'"));
+				} else {
+					admRsvParm = new TParm(
+							this.getDBTool().select("SELECT * FROM ADM_RESV_VIEW WHERE RESV_NO='" + this.getResvNo() // =====
+																														// caoy
+																														// add
+									+ "'"));
+				}
+
 		if (admRsvParm.getCount() > 0) {
 			for (String parmName : admRsvParm.getNames()) {
 				parm.addData(parmName, admRsvParm.getValue(parmName, 0));
@@ -4568,10 +4585,10 @@ public class TEmrWordControl extends TControl implements DMessageIO {
 	 * 按页打印
 	 */
 	public void onPrintIndex() {
-		// 先保存
-		if (!this.onSave()) {
-			return;
-		}
+//		// 先保存
+//		if (!this.onSave()) {
+//			return;
+//		}
 		//
 		if (this.getWord().getFileOpenName() != null) {
 			this.getWord().onPreviewWord();
