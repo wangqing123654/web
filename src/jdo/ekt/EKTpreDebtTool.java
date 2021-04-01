@@ -746,6 +746,10 @@ public class EKTpreDebtTool extends TJDODBTool {
 		String sql = "DELETE FROM OPD_ORDER WHERE CASE_NO = '" + caseNo + "' AND ORDER_CODE ='" + orderCode
 				+ "' AND BILL_FLG='N'";
 		TParm result = new TParm(TJDODBTool.getInstance().update(sql));
+		// 101不良妊娠  该身份不执行药事服务费价格判定
+		if("101".equals(regParm.getValue("CTZ1_CODE"))) {
+			return null;
+		}
 		// 插入一笔药事服务费
 		TParm sysFeeParm = SYSFeeTool.getInstance().getFeeAllData(orderCode);
 		if(sysFeeParm.getCount("CHARGE_HOSP_CODE")==0) {
