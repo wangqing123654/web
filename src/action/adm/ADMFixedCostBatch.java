@@ -146,6 +146,9 @@ public class ADMFixedCostBatch extends Patch {
 		TParm result = new TParm();
 		try {
 			result = ADMAutoBillTool.getInstance().phaServiceFee(parm, conn);
+			if (result.getErrCode() < 0) {
+				throw new Exception(result.getErrName() + " " + result.getErrText());
+			}
 			conn.commit();
 		} catch (Exception e) {
 			conn.rollback();

@@ -747,7 +747,9 @@ public class EKTpreDebtTool extends TJDODBTool {
 				+ "' AND BILL_FLG='N'";
 		TParm result = new TParm(TJDODBTool.getInstance().update(sql));
 		// 101不良妊娠  该身份不执行药事服务费价格判定
-		if("101".equals(regParm.getValue("CTZ1_CODE"))) {
+		// 89 [员工]2019 92 急诊[员工]2019 上面这两个身份门诊 住院都不收药事服务费
+		if ("101".equals(regParm.getValue("CTZ1_CODE")) || "89".equals(regParm.getValue("CTZ1_CODE"))
+				|| "92".equals(regParm.getValue("CTZ1_CODE"))) {
 			return null;
 		}
 		// 插入一笔药事服务费

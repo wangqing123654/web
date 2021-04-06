@@ -14,6 +14,7 @@ import jdo.sys.SYSFeeTool;
 import jdo.sys.StatusDetailsTool;
 import jdo.sys.SysFee;
 
+import com.dongyang.config.TConfig;
 import com.dongyang.data.TParm;
 import com.dongyang.jdo.TJDODBTool;
 import com.dongyang.util.Log;
@@ -304,6 +305,12 @@ public class BIL {
      */
     public static double getRate(String CTZ1, String CTZ2, String CTZ3,
                                  String orderCode, String level) {
+		// 药事服务费不打折
+		String PHA_SERVICE_FEE = TConfig.getSystemValue("PHA_SERVICE_FEE");
+		if (orderCode.equals(PHA_SERVICE_FEE)) {
+			return 1;
+		}
+		//
         String chargeHospCode = SysFee.getChargeHospCode(orderCode);
         if (chargeHospCode == null || chargeHospCode.length() == 0)
             return -1;

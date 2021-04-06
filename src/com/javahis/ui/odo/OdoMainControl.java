@@ -991,6 +991,10 @@ public class OdoMainControl extends TControl {
 			String delPreSql = "DELETE OPD_ORDER WHERE CASE_NO = '" + odo.getCaseNo() + "' AND  RX_NO = 'CLINIC_FEE'";
 			TParm delPreParm = new TParm(TJDODBTool.getInstance().update(delPreSql));
 			
+			// 删除药事服务费
+			delPreSql = "DELETE OPD_ORDER WHERE CASE_NO = '" + odo.getCaseNo() + "' AND  RX_NO = 'PHA_SERVICE_FEE'";
+			delPreParm = new TParm(TJDODBTool.getInstance().update(delPreSql));
+			//
 			String sql3 ="UPDATE REG_PATADM SET SEE_DR_FLG='N',OPT_USER='"+Operator.getID()+"',OPT_DATE=SYSDATE,OPT_TERM='"+Operator.getIP()+"' WHERE CASE_NO='" + odo.getCaseNo()+"' AND MR_NO = '" + odo.getMrNo() + "'";
 			TParm updateParm = new TParm(TJDODBTool.getInstance().update(sql3));
 			
@@ -1014,6 +1018,10 @@ public class OdoMainControl extends TControl {
 	public boolean isHaveOthersRxNo(TParm p) {
 		for (int i = 0; i < p.getCount(); i++) {
 			if (!"CLINIC_FEE".equals(p.getValue("RX_NO", i))) {
+				return true;
+			}
+			// 药事服务费
+			if (!"PHA_SERVICE_FEE".equals(p.getValue("RX_NO", i))) {
 				return true;
 			}
 		}
