@@ -897,7 +897,11 @@ public class ADMAutoBillTool extends TJDOTool {
 			return admInp;
 		}
 		// 避免重复收取药事服务费
-		this.delPhaServiceFee(conn, CASE_NO, admInp.getDouble("TOTAL_AMT", 0), admInp.getDouble("CUR_AMT", 0));
+		TParm delP = this.delPhaServiceFee(conn, CASE_NO, admInp.getDouble("TOTAL_AMT", 0),
+				admInp.getDouble("CUR_AMT", 0));
+		if (delP.getErrCode() < 0) {
+			return delP;
+		}
 		// 套餐患者不收取药事服务费
 		String lumpworkCode=admInp.getValue("LUMPWORK_CODE", 0);//套餐代码
 		if (null != lumpworkCode && lumpworkCode.length() > 0) {
@@ -1039,14 +1043,29 @@ public class ADMAutoBillTool extends TJDOTool {
 	 */
 	private TParm delPhaServiceFee(TConnection conn, String caseNo, double totalAmt, double curAmt) {
 		String orderCode = TConfig.getSystemValue("PHA_SERVICE_FEE");
-		String sql = "select nvl( sum( TOT_AMT ), 0 ) as TOT_AMT  from ibs_ordd where order_code = '@'";
+		String sql = "select CASE_NO, CASE_NO_SEQ, TOT_AMT from ibs_ordd where order_code = '@'";
 		sql = sql.replace("@", orderCode);
 		TParm t = new TParm(TJDODBTool.getInstance().select(sql));
-		double amt = t.getDouble("TOT_AMT", 0);
-		if (amt > 0) {
-			String sql1 = "delete from ibs_ordd where order_code = '@'";
+		if (t.getCount("CASE_NO") <= 0) {
+			return new TParm();
+		} else {
+			double amt = 0;
+			String sql1 = null;
+			TParm t1 = null;
+			for (int i = 0; i < t.getCount("CASE_NO"); i++) {
+				amt += t.getDouble("TOT_AMT", i);
+				// del ibs_ordm
+				sql1 = "DELETE FROM IBS_ORDM WHERE CASE_NO='@1' AND CASE_NO_SEQ = @2";
+				sql1 = sql1.replace("@1", caseNo).replace("@2", t.getValue("CASE_NO_SEQ", i));
+				t1 = new TParm(TJDODBTool.getInstance().update(sql1, conn));
+				if (t1.getErrCode() < 0) {
+					return t1;
+				}
+			}
+			// del ibs_ordd
+			sql1 = "delete from ibs_ordd where order_code = '@'";
 			sql1 = sql1.replace("@", orderCode);
-			TParm t1 = new TParm(TJDODBTool.getInstance().update(sql1, conn));
+			t1 = new TParm(TJDODBTool.getInstance().update(sql1, conn));
 			if (t1.getErrCode() < 0) {
 				return t1;
 			}
