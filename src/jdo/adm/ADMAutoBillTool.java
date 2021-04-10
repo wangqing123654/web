@@ -902,16 +902,17 @@ public class ADMAutoBillTool extends TJDOTool {
 		if (delP.getErrCode() < 0) {
 			return delP;
 		}
-		// 套餐患者不收取药事服务费
-		String lumpworkCode=admInp.getValue("LUMPWORK_CODE", 0);//套餐代码
-		if (null != lumpworkCode && lumpworkCode.length() > 0) {
-			System.out.println("===套餐患者不收取药事服务费===");
-			return new TParm();
-		}
-		// 89 [员工]2019 92 急诊[员工]2019 上面这两个身份门诊 住院都不收药事服务费
-		if ("89".equals(admInp.getValue("CTZ1_CODE", 0)) || "92".equals(admInp.getValue("CTZ1_CODE", 0))) {
-			return new TParm();
-		}
+//		// 套餐患者不收取药事服务费
+//		String lumpworkCode=admInp.getValue("LUMPWORK_CODE", 0);//套餐代码
+//		if (null != lumpworkCode && lumpworkCode.length() > 0) {
+//			System.out.println("===套餐患者不收取药事服务费===");
+//			return new TParm();
+//		}
+//		// 89 [员工]2019 92 急诊[员工]2019 上面这两个身份门诊 住院都不收药事服务费
+//		if ("89".equals(admInp.getValue("CTZ1_CODE", 0)) || "92".equals(admInp.getValue("CTZ1_CODE", 0))) {
+//			System.out.println("===89 [员工]2019 92 急诊[员工]2019 上面这两个身份门诊 住院都不收药事服务费===");
+//			return new TParm();
+//		}
 		// 计算药事服务费数量
 		String sql = "SELECT\r\n" + "	TO_CHAR( BILL_DATE, 'YYYY-MM-DD' ) DAY,\r\n" + "	SUM( TOT_AMT ) TOT_AMT \r\n"
 				+ "FROM\r\n" + "	IBS_ORDD \r\n" + "WHERE\r\n" + "	CASE_NO = '@' \r\n"
@@ -1028,6 +1029,17 @@ public class ADMAutoBillTool extends TJDOTool {
 			err("ERR:" + result.getErrCode() + result.getErrText() + result.getErrName());
 			return result;
 		}
+		System.out.println("===就诊号" + CASE_NO + "收取药事服务费成功===");
+		// 改成套外医嘱
+		String sql2 = "UPDATE IBS_ORDD SET INCLUDE_FLG = 'Y' WHERE CASE_NO='@1' AND ORDER_CODE ='@2'";
+		sql2 = sql2.replace("@1", CASE_NO).replace("@2", orderCode);
+		result = new TParm(TJDODBTool.getInstance().update(sql2, conn));
+		if (result.getErrCode() < 0) {
+			err("ERR:" + result.getErrCode() + result.getErrText() + result.getErrName());
+			return result;
+		}
+		System.out.println("===就诊号" + CASE_NO + "更新药事服务费为套外医嘱成功===");
+		//
 		return result;
 	}
 	
@@ -1043,8 +1055,8 @@ public class ADMAutoBillTool extends TJDOTool {
 	 */
 	private TParm delPhaServiceFee(TConnection conn, String caseNo, double totalAmt, double curAmt) {
 		String orderCode = TConfig.getSystemValue("PHA_SERVICE_FEE");
-		String sql = "select CASE_NO, CASE_NO_SEQ, TOT_AMT from ibs_ordd where order_code = '@'";
-		sql = sql.replace("@", orderCode);
+		String sql = "select CASE_NO, CASE_NO_SEQ, TOT_AMT from ibs_ordd where order_code = '@1' and CASE_NO='@2'";
+		sql = sql.replace("@1", orderCode).replace("@2", caseNo);
 		TParm t = new TParm(TJDODBTool.getInstance().select(sql));
 		if (t.getCount("CASE_NO") <= 0) {
 			return new TParm();
@@ -1063,8 +1075,8 @@ public class ADMAutoBillTool extends TJDOTool {
 				}
 			}
 			// del ibs_ordd
-			sql1 = "delete from ibs_ordd where order_code = '@'";
-			sql1 = sql1.replace("@", orderCode);
+			sql1 = "delete from ibs_ordd where order_code = '@1' AND CASE_NO='@2'";
+			sql1 = sql1.replace("@1", orderCode).replace("@2", caseNo);
 			t1 = new TParm(TJDODBTool.getInstance().update(sql1, conn));
 			if (t1.getErrCode() < 0) {
 				return t1;

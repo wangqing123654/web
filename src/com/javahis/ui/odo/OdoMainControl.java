@@ -1017,11 +1017,8 @@ public class OdoMainControl extends TControl {
 	 */
 	public boolean isHaveOthersRxNo(TParm p) {
 		for (int i = 0; i < p.getCount(); i++) {
-			if (!"CLINIC_FEE".equals(p.getValue("RX_NO", i))) {
-				return true;
-			}
-			// 药事服务费
-			if (!"PHA_SERVICE_FEE".equals(p.getValue("RX_NO", i))) {
+			// 诊疗费用、药事服务费
+			if (!"CLINIC_FEE".equals(p.getValue("RX_NO", i)) && !"PHA_SERVICE_FEE".equals(p.getValue("RX_NO", i))) {
 				return true;
 			}
 		}
